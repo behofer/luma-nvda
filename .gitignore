@@ -24,6 +24,10 @@ INTERACTION.md
 LOCAL.md
 SPEECH.md
 
+# PyMuPDF C/C++ development headers + static libs — build-time only,
+# not imported at runtime and not shipped in the .nvda-addon
+globalPlugins/luma/lib/pymupdf/mupdf-devel/
+
 # OS / editor junk
 Thumbs.db
 .DS_Store
