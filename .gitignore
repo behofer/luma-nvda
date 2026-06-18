@@ -1,0 +1,30 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Built add-on package and build output
+*.nvda-addon
+/dist/
+/build/
+
+# Local agent / editor tooling
+.claude/
+
+# Internal planning & scratch docs (kept local, not part of the public release)
+CLAUDE.md
+TASKS.md
+IDEAS.md
+fixes.md
+PRD.md
+CAMERA.md
+CLIPBOARD.md
+FILE_RECOGNITION.md
+INTERACTION.md
+LOCAL.md
+SPEECH.md
+
+# OS / editor junk
+Thumbs.db
+.DS_Store
+*.swp

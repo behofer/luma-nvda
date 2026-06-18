@@ -1,0 +1,743 @@
+# German translations for Luma NVDA add-on.
+# Copyright (C) 2026 Luma Contributors
+# This file is distributed under the same license as the Luma package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Luma 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-20 20:25+0100\n"
+"PO-Revision-Date: 2026-03-20 20:30+0100\n"
+"Last-Translator: Luma Contributors\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Translators: Category name shown in NVDA Input Gestures dialog.
+#: globalPlugins/luma/__init__.py:42
+msgid "Luma"
+msgstr "Luma"
+
+#. Translators: Tools menu item to manage providers.
+#. Translators: Popup menu item to manage providers.
+#: globalPlugins/luma/__init__.py:77 globalPlugins/luma/__init__.py:400
+msgid "&Providers..."
+msgstr "&Anbieter..."
+
+#. Translators: Tools menu item to manage skills.
+#. Translators: Popup menu item to manage skills.
+#: globalPlugins/luma/__init__.py:81 globalPlugins/luma/__init__.py:402
+msgid "&Skills..."
+msgstr "&Skills..."
+
+#. Translators: Tools menu item to process navigator object.
+#. Translators: Popup menu item to process navigator object.
+#: globalPlugins/luma/__init__.py:87 globalPlugins/luma/__init__.py:421
+msgid "Process Navigator &Object"
+msgstr "Navigator-&Objekt verarbeiten"
+
+#. Translators: Tools menu item to process the selected file in File Explorer.
+#. Translators: Popup menu item to process the selected file.
+#: globalPlugins/luma/__init__.py:91 globalPlugins/luma/__init__.py:423
+msgid "Process Selected &File"
+msgstr "Ausgewählte &Datei verarbeiten"
+
+#. Translators: Tools menu item to process entire screen.
+#. Translators: Popup menu item to process entire screen.
+#: globalPlugins/luma/__init__.py:95 globalPlugins/luma/__init__.py:425
+msgid "Process Entire &Screen"
+msgstr "Gesamten &Bildschirm verarbeiten"
+
+#. Translators: Tools menu item to process clipboard content.
+#. Translators: Popup menu item to process clipboard content.
+#: globalPlugins/luma/__init__.py:99 globalPlugins/luma/__init__.py:427
+msgid "Process &Clipboard"
+msgstr "&Zwischenablage verarbeiten"
+
+#. Translators: Tools menu item to process camera image.
+#. Translators: Popup menu item to process camera image.
+#: globalPlugins/luma/__init__.py:103 globalPlugins/luma/__init__.py:429
+msgid "Process Ca&mera"
+msgstr "Ka&mera verarbeiten"
+
+#. Translators: Tools menu item to open text chat.
+#. Translators: Popup menu item to open text chat.
+#: globalPlugins/luma/__init__.py:107 globalPlugins/luma/__init__.py:431
+msgid "&Text Chat"
+msgstr "&Text-Chat"
+
+#. Translators: Tools menu item to configure shortcuts.
+#. Translators: Popup menu item to configure shortcuts.
+#: globalPlugins/luma/__init__.py:113 globalPlugins/luma/__init__.py:436
+msgid "S&hortcuts..."
+msgstr "S&chnelltasten..."
+
+#. Translators: Tools menu item to open settings.
+#. Translators: Popup menu item to open settings.
+#: globalPlugins/luma/__init__.py:117 globalPlugins/luma/__init__.py:438
+msgid "S&ettings..."
+msgstr "&Einstellungen..."
+
+#. Translators: Label for the Luma submenu in NVDA's Tools menu.
+#: globalPlugins/luma/__init__.py:124
+msgid "&Luma"
+msgstr "&Luma"
+
+#. Translators: Spoken when no file is selected in File Explorer.
+#: globalPlugins/luma/__init__.py:158
+msgid "No file selected in File Explorer."
+msgstr "Keine Datei im Datei-Explorer ausgewählt."
+
+#. Translators: Spoken when the clipboard is empty.
+#: globalPlugins/luma/__init__.py:175 globalPlugins/luma/__init__.py:593
+msgid "Clipboard is empty."
+msgstr "Zwischenablage ist leer."
+
+#. Translators: Source label for clipboard image processing.
+#: globalPlugins/luma/__init__.py:181 globalPlugins/luma/__init__.py:608
+msgid "clipboard image"
+msgstr "Zwischenablage-Bild"
+
+#. Translators: Spoken when no providers are configured.
+#: globalPlugins/luma/__init__.py:218
+msgid "No providers configured. Please add a provider first."
+msgstr ""
+"Keine Anbieter konfiguriert. Bitte fügen Sie zuerst einen Anbieter hinzu."
+
+#. Translators: Spoken when no model is configured.
+#: globalPlugins/luma/__init__.py:247
+msgid "No model configured. Please set a default model in Settings."
+msgstr ""
+"Kein Modell konfiguriert. Bitte legen Sie ein Standardmodell in den "
+"Einstellungen fest."
+
+#. Translators: Spoken when provider creation fails. {error} is the detail.
+#: globalPlugins/luma/__init__.py:255
+#, python-brace-format
+msgid "Provider error: {error}"
+msgstr "Anbieterfehler: {error}"
+
+#. Translators: Spoken when no active skill is set.
+#: globalPlugins/luma/__init__.py:289
+msgid "No active skill. Press NVDA+Shift+Space to select one."
+msgstr ""
+"Kein aktiver Skill. Drücken Sie NVDA+Umschalt+Leertaste, um einen "
+"auszuwählen."
+
+#: globalPlugins/luma/__init__.py:294
+msgid "navigator object"
+msgstr "Navigator-Objekt"
+
+#: globalPlugins/luma/__init__.py:295
+msgid "screen"
+msgstr "Bildschirm"
+
+#: globalPlugins/luma/__init__.py:296
+msgid "application"
+msgstr "Anwendung"
+
+#. Translators: Spoken when screen capture fails.
+#: globalPlugins/luma/__init__.py:326
+msgid "Failed to capture image."
+msgstr "Bildaufnahme fehlgeschlagen."
+
+#. Translators: Spoken when processing begins. {source} is what is being
+#. processed (e.g. "navigator object", "screen", "file photo.jpg").
+#. {skill} is the active skill name (e.g. "Describe").
+#: globalPlugins/luma/__init__.py:339
+#, python-brace-format
+msgid "Processing {source} using {skill}..."
+msgstr "Verarbeite {source} mit {skill}..."
+
+#. Translators: Description for the open Luma menu gesture.
+#: globalPlugins/luma/__init__.py:388
+msgid "Open Luma main menu"
+msgstr "Luma-Hauptmenü öffnen"
+
+#. Translators: Popup submenu label for selecting the active skill.
+#: globalPlugins/luma/__init__.py:416
+msgid "&Active Skill"
+msgstr "&Aktiver Skill"
+
+#. Translators: Spoken when the active skill is changed. {name} is the skill name.
+#: globalPlugins/luma/__init__.py:447 globalPlugins/luma/__init__.py:771
+#, python-brace-format
+msgid "Active skill: {name}"
+msgstr "Aktiver Skill: {name}"
+
+#: globalPlugins/luma/__init__.py:475
+msgid ""
+"Process navigator object with active skill. Press twice quickly to open text "
+"chat."
+msgstr ""
+"Navigator-Objekt mit aktivem Skill verarbeiten. Zweimal schnell drücken, um "
+"den Text-Chat zu öffnen."
+
+#. Translators: Spoken when no file could be read.
+#: globalPlugins/luma/__init__.py:498 globalPlugins/luma/__init__.py:534
+msgid "Could not read the selected file."
+msgstr "Die ausgewählte Datei konnte nicht gelesen werden."
+
+#. Translators: Spoken when an unsupported file type is selected.
+#: globalPlugins/luma/__init__.py:522
+#, python-brace-format
+msgid "File type {ext} is not supported."
+msgstr "Dateityp {ext} wird nicht unterstützt."
+
+#. Translators: Spoken when the selected file is too large.
+#: globalPlugins/luma/__init__.py:528
+msgid "File is too large to process."
+msgstr "Datei ist zu groß zum Verarbeiten."
+
+#. Translators: Source label for file processing messages. {filename} is the file name.
+#: globalPlugins/luma/__init__.py:538
+#, python-brace-format
+msgid "file {filename}"
+msgstr "Datei {filename}"
+
+#: globalPlugins/luma/__init__.py:547
+msgid ""
+"Process entire screen with active skill. Press twice quickly to open text "
+"chat."
+msgstr ""
+"Gesamten Bildschirm mit aktivem Skill verarbeiten. Zweimal schnell drücken, "
+"um den Text-Chat zu öffnen."
+
+#: globalPlugins/luma/__init__.py:575
+msgid ""
+"Process clipboard with active skill. Press twice quickly to open text chat."
+msgstr ""
+"Zwischenablage mit aktivem Skill verarbeiten. Zweimal schnell drücken, um "
+"den Text-Chat zu öffnen."
+
+#. Translators: Spoken when clipboard text processing begins.
+#. {skill} is the active skill name (e.g. "Describe").
+#: globalPlugins/luma/__init__.py:623
+#, python-brace-format
+msgid "Processing clipboard using {skill}..."
+msgstr "Verarbeite Zwischenablage mit {skill}..."
+
+#: globalPlugins/luma/__init__.py:671
+msgid ""
+"Process camera image with active skill. Press twice quickly to open text "
+"chat."
+msgstr ""
+"Kamerabild mit aktivem Skill verarbeiten. Zweimal schnell drücken, um den "
+"Text-Chat zu öffnen."
+
+#. Translators: Spoken when no camera is detected.
+#: globalPlugins/luma/__init__.py:702
+msgid "No camera found."
+msgstr "Keine Kamera gefunden."
+
+#. Translators: Spoken when camera capture begins.
+#: globalPlugins/luma/__init__.py:706
+msgid "Capturing from camera..."
+msgstr "Aufnahme von Kamera..."
+
+#. Translators: Spoken when camera capture fails.
+#: globalPlugins/luma/__init__.py:714 globalPlugins/luma/__init__.py:729
+msgid "Failed to capture from camera."
+msgstr "Kameraaufnahme fehlgeschlagen."
+
+#: globalPlugins/luma/__init__.py:723
+msgid "camera image"
+msgstr "Kamerabild"
+
+#. Translators: Description for the text chat gesture.
+#: globalPlugins/luma/__init__.py:738
+msgid "Open Luma text chat"
+msgstr "Luma-Text-Chat öffnen"
+
+#. Translators: Description for the toggle active skill gesture.
+#: globalPlugins/luma/__init__.py:747
+msgid "Toggle active skill"
+msgstr "Aktiven Skill wechseln"
+
+#. Translators: Spoken when no skills are available.
+#: globalPlugins/luma/__init__.py:755
+msgid "No skills available."
+msgstr "Keine Skills verfügbar."
+
+#. Translators: Description for the custom shortcut 1 gesture.
+#: globalPlugins/luma/__init__.py:778
+msgid "Execute custom shortcut 1"
+msgstr "Benutzerdefinierte Schnelltaste 1 ausführen"
+
+#. Translators: Description for the custom shortcut 2 gesture.
+#: globalPlugins/luma/__init__.py:783
+msgid "Execute custom shortcut 2"
+msgstr "Benutzerdefinierte Schnelltaste 2 ausführen"
+
+#. Translators: Description for the custom shortcut 3 gesture.
+#: globalPlugins/luma/__init__.py:788
+msgid "Execute custom shortcut 3"
+msgstr "Benutzerdefinierte Schnelltaste 3 ausführen"
+
+#. Translators: Description for the custom shortcut 4 gesture.
+#: globalPlugins/luma/__init__.py:793
+msgid "Execute custom shortcut 4"
+msgstr "Benutzerdefinierte Schnelltaste 4 ausführen"
+
+#. Translators: Description for the custom shortcut 5 gesture.
+#: globalPlugins/luma/__init__.py:798
+msgid "Execute custom shortcut 5"
+msgstr "Benutzerdefinierte Schnelltaste 5 ausführen"
+
+#. Translators: Description for the custom shortcut 6 gesture.
+#: globalPlugins/luma/__init__.py:803
+msgid "Execute custom shortcut 6"
+msgstr "Benutzerdefinierte Schnelltaste 6 ausführen"
+
+#. Translators: Description for the custom shortcut 7 gesture.
+#: globalPlugins/luma/__init__.py:808
+msgid "Execute custom shortcut 7"
+msgstr "Benutzerdefinierte Schnelltaste 7 ausführen"
+
+#. Translators: Description for the custom shortcut 8 gesture.
+#: globalPlugins/luma/__init__.py:813
+msgid "Execute custom shortcut 8"
+msgstr "Benutzerdefinierte Schnelltaste 8 ausführen"
+
+#. Translators: Description for the custom shortcut 9 gesture.
+#: globalPlugins/luma/__init__.py:818
+msgid "Execute custom shortcut 9"
+msgstr "Benutzerdefinierte Schnelltaste 9 ausführen"
+
+#. Translators: Description for the custom shortcut 0 gesture.
+#: globalPlugins/luma/__init__.py:823
+msgid "Execute custom shortcut 10"
+msgstr "Benutzerdefinierte Schnelltaste 10 ausführen"
+
+#. Translators: Spoken when no shortcut is assigned. {key} is the digit.
+#: globalPlugins/luma/__init__.py:836
+#, python-brace-format
+msgid "No shortcut assigned to NVDA+Shift+{key}."
+msgstr "Keine Schnelltaste für NVDA+Umschalt+{key} zugewiesen."
+
+#. Translators: Spoken when a shortcut is incomplete.
+#: globalPlugins/luma/__init__.py:844
+#, python-brace-format
+msgid "Shortcut {key} is not fully configured."
+msgstr "Schnelltaste {key} ist nicht vollständig konfiguriert."
+
+#. Translators: Spoken when a shortcut references a missing skill. {name} is the name.
+#: globalPlugins/luma/__init__.py:855
+#, python-brace-format
+msgid "Skill \"{name}\" not found."
+msgstr "Skill \"{name}\" nicht gefunden."
+
+#. Translators: Title of the providers management dialog.
+#: globalPlugins/luma/dialogs.py:36
+msgid "Configure Providers"
+msgstr "Anbieter konfigurieren"
+
+#. Translators: Label above the providers list.
+#: globalPlugins/luma/dialogs.py:46
+msgid "&Providers:"
+msgstr "&Anbieter:"
+
+#. Translators: Button to add a new provider.
+#: globalPlugins/luma/dialogs.py:54
+msgid "&New Provider..."
+msgstr "&Neuer Anbieter..."
+
+#. Translators: Button to edit the selected provider.
+#: globalPlugins/luma/dialogs.py:59
+msgid "&Edit Provider..."
+msgstr "Anbieter &bearbeiten..."
+
+#. Translators: Button to delete the selected provider.
+#: globalPlugins/luma/dialogs.py:64
+msgid "&Delete Provider"
+msgstr "Anbieter &löschen"
+
+#. Translators: Button to close the dialog.
+#. Translators: Button to close the chat dialog.
+#. Translators: Button to close the result dialog.
+#: globalPlugins/luma/dialogs.py:69 globalPlugins/luma/dialogs.py:362
+#: globalPlugins/luma/dialogs.py:812 globalPlugins/luma/result_handler.py:88
+msgid "Close"
+msgstr "Schließen"
+
+#: globalPlugins/luma/dialogs.py:82 globalPlugins/luma/dialogs.py:205
+msgid "Unnamed"
+msgstr "Unbenannt"
+
+#: globalPlugins/luma/dialogs.py:113
+#, python-brace-format
+msgid "Are you sure you want to delete the provider \"{name}\"?"
+msgstr "Sind Sie sicher, dass Sie den Anbieter \"{name}\" löschen möchten?"
+
+#. Translators: Title of the delete-provider confirmation dialog.
+#: globalPlugins/luma/dialogs.py:115
+msgid "Delete Provider"
+msgstr "Anbieter löschen"
+
+#. Translators: Title when editing an existing provider.
+#: globalPlugins/luma/dialogs.py:133
+msgid "Edit Provider"
+msgstr "Anbieter bearbeiten"
+
+#. Translators: Title when adding a new provider.
+#: globalPlugins/luma/dialogs.py:136
+msgid "New Provider"
+msgstr "Neuer Anbieter"
+
+#. Translators: Label for the provider name field.
+#. Translators: Label for the skill name field.
+#: globalPlugins/luma/dialogs.py:146 globalPlugins/luma/dialogs.py:464
+msgid "&Name:"
+msgstr "&Name:"
+
+#. Translators: Label for the API URL field.
+#: globalPlugins/luma/dialogs.py:151
+msgid "API &URL:"
+msgstr "API-&URL:"
+
+#. Translators: Label for the API key field.
+#: globalPlugins/luma/dialogs.py:156
+msgid "API &Key:"
+msgstr "API-&Schlüssel:"
+
+#. Translators: Label for the model fetch URL field.
+#: globalPlugins/luma/dialogs.py:161
+msgid "Model &Fetch URL (optional):"
+msgstr "Modell-&Abruf-URL (optional):"
+
+#. Translators: Title of the Luma settings dialog.
+#: globalPlugins/luma/dialogs.py:192
+msgid "Luma Settings"
+msgstr "Luma-Einstellungen"
+
+#. Translators: Label for the default provider combo box.
+#: globalPlugins/luma/dialogs.py:204
+msgid "Default &Provider:"
+msgstr "Standard-&Anbieter:"
+
+#. Translators: Label for the default model combo box.
+#: globalPlugins/luma/dialogs.py:212
+msgid "Default &Model:"
+msgstr "Standard-&Modell:"
+
+#. Translators: Button to fetch available models from the selected provider.
+#: globalPlugins/luma/dialogs.py:217 globalPlugins/luma/dialogs.py:484
+msgid "&Fetch Models"
+msgstr "Modelle &abrufen"
+
+#. Translators: Checkbox label for opening results in a browseable dialog.
+#: globalPlugins/luma/dialogs.py:223
+msgid "&Open result in a browseable dialog"
+msgstr "Ergebnis in einem &durchsuchbaren Dialog öffnen"
+
+#. Translators: Label for the default temperature setting.
+#: globalPlugins/luma/dialogs.py:228
+msgid "Default &Temperature:"
+msgstr "Standard-&Temperatur:"
+
+#. Translators: Label for the API timeout setting.
+#: globalPlugins/luma/dialogs.py:235
+msgid "&Timeout (seconds):"
+msgstr "&Zeitlimit (Sekunden):"
+
+#. Translators: Spoken when no provider is selected for model fetching.
+#: globalPlugins/luma/dialogs.py:274
+msgid "Please select a provider first."
+msgstr "Bitte wählen Sie zuerst einen Anbieter aus."
+
+#. Translators: Spoken when fetching models from a provider.
+#. Translators: Spoken when fetching models.
+#: globalPlugins/luma/dialogs.py:281 globalPlugins/luma/dialogs.py:553
+msgid "Fetching models..."
+msgstr "Modelle werden abgerufen..."
+
+#. Translators: Spoken when models have been fetched. {count} is the number found.
+#. Translators: Spoken when models have been fetched. {count} is the number.
+#: globalPlugins/luma/dialogs.py:291 globalPlugins/luma/dialogs.py:562
+#, python-brace-format
+msgid "{count} model(s) found."
+msgstr "{count} Modell(e) gefunden."
+
+#. Translators: Spoken when no models were found.
+#: globalPlugins/luma/dialogs.py:294 globalPlugins/luma/dialogs.py:566
+msgid "No models found."
+msgstr "Keine Modelle gefunden."
+
+#. Translators: Spoken when fetching models fails. {error} is the error detail.
+#. Translators: Spoken when model fetching fails. {error} is the detail.
+#: globalPlugins/luma/dialogs.py:299 globalPlugins/luma/dialogs.py:571
+#, python-brace-format
+msgid "Failed to fetch models: {error}"
+msgstr "Modellabruf fehlgeschlagen: {error}"
+
+#. Translators: Title of the skills management dialog.
+#: globalPlugins/luma/dialogs.py:327
+msgid "Manage Skills"
+msgstr "Skills verwalten"
+
+#. Translators: Label above the skills list.
+#: globalPlugins/luma/dialogs.py:338
+msgid "&Skills:"
+msgstr "&Skills:"
+
+#. Translators: Button to create a new custom skill.
+#: globalPlugins/luma/dialogs.py:347
+msgid "&New Skill..."
+msgstr "&Neuer Skill..."
+
+#. Translators: Button to edit the selected custom skill.
+#: globalPlugins/luma/dialogs.py:352
+msgid "&Edit Skill..."
+msgstr "Skill &bearbeiten..."
+
+#. Translators: Button to delete the selected custom skill.
+#: globalPlugins/luma/dialogs.py:357
+msgid "&Delete Skill"
+msgstr "Skill &löschen"
+
+#. Translators: Suffix shown after a builtin skill name.
+#: globalPlugins/luma/dialogs.py:379
+msgid " (builtin)"
+msgstr " (integriert)"
+
+#: globalPlugins/luma/dialogs.py:423
+#, python-brace-format
+msgid "Are you sure you want to delete the skill \"{name}\"?"
+msgstr "Sind Sie sicher, dass Sie den Skill \"{name}\" löschen möchten?"
+
+#. Translators: Title of the delete-skill confirmation dialog.
+#: globalPlugins/luma/dialogs.py:425
+msgid "Delete Skill"
+msgstr "Skill löschen"
+
+#. Translators: Title when editing an existing skill.
+#: globalPlugins/luma/dialogs.py:447
+msgid "Edit Skill"
+msgstr "Skill bearbeiten"
+
+#. Translators: Title when creating a new skill.
+#: globalPlugins/luma/dialogs.py:450
+msgid "New Skill"
+msgstr "Neuer Skill"
+
+#. Translators: Label for the skill provider combo box.
+#: globalPlugins/luma/dialogs.py:470
+msgid "&Provider:"
+msgstr "&Anbieter:"
+
+#: globalPlugins/luma/dialogs.py:471 globalPlugins/luma/dialogs.py:480
+#: globalPlugins/luma/dialogs.py:481 globalPlugins/luma/dialogs.py:498
+#: globalPlugins/luma/dialogs.py:557 globalPlugins/luma/dialogs.py:587
+msgid "Default"
+msgstr "Standard"
+
+#. Translators: Label for the skill model combo box.
+#: globalPlugins/luma/dialogs.py:478
+msgid "&Model:"
+msgstr "&Modell:"
+
+#. Translators: Label for the temperature spin control.
+#: globalPlugins/luma/dialogs.py:491
+msgid "&Temperature (0-200, divided by 100):"
+msgstr "&Temperatur (0-200, geteilt durch 100):"
+
+#. Translators: Label for the skill language field.
+#: globalPlugins/luma/dialogs.py:497
+msgid "&Language:"
+msgstr "&Sprache:"
+
+#. Translators: Label for the skill prompt field.
+#: globalPlugins/luma/dialogs.py:503
+msgid "P&rompt:"
+msgstr "P&rompt:"
+
+#. Translators: Spoken when no default provider is configured.
+#: globalPlugins/luma/dialogs.py:545
+msgid "No default provider configured. Please select a provider."
+msgstr ""
+"Kein Standardanbieter konfiguriert. Bitte wählen Sie einen Anbieter aus."
+
+#. Translators: Scope option — process the navigator object.
+#: globalPlugins/luma/dialogs.py:632
+msgid "Navigator object"
+msgstr "Navigator-Objekt"
+
+#. Translators: Scope option — process the entire screen.
+#: globalPlugins/luma/dialogs.py:634
+msgid "Entire screen"
+msgstr "Gesamter Bildschirm"
+
+#. Translators: Scope option — process the current application window.
+#: globalPlugins/luma/dialogs.py:636
+msgid "Current application"
+msgstr "Aktuelle Anwendung"
+
+#. Translators: Scope option — open text chat.
+#: globalPlugins/luma/dialogs.py:638
+msgid "Text Chat"
+msgstr "Text-Chat"
+
+#. Translators: Title of the shortcuts configuration dialog.
+#: globalPlugins/luma/dialogs.py:649
+msgid "Configure Shortcuts"
+msgstr "Schnelltasten konfigurieren"
+
+#: globalPlugins/luma/dialogs.py:660
+msgid "Assign a skill and scope to each NVDA+Shift shortcut key (1-0):"
+msgstr ""
+"Weisen Sie jeder NVDA+Umschalt-Schnelltaste (1-0) einen Skill und Bereich zu:"
+
+#: globalPlugins/luma/dialogs.py:664 globalPlugins/luma/dialogs.py:665
+msgid "(none)"
+msgstr "(keine)"
+
+#. Translators: Label for a shortcut row. {key} is the digit key.
+#: globalPlugins/luma/dialogs.py:676
+#, python-brace-format
+msgid "NVDA+Shift+{key}:"
+msgstr "NVDA+Umschalt+{key}:"
+
+#. Translators: Title of the text chat dialog.
+#: globalPlugins/luma/dialogs.py:761
+msgid "Luma Chat"
+msgstr "Luma-Chat"
+
+#: globalPlugins/luma/dialogs.py:763
+#, python-brace-format
+msgid "Luma Chat — {skill}"
+msgstr "Luma-Chat — {skill}"
+
+#. Translators: System message providing clipboard context to the AI.
+#: globalPlugins/luma/dialogs.py:781
+#, python-brace-format
+msgid ""
+"The user has shared the following clipboard content:\n"
+"\n"
+"{text}"
+msgstr ""
+"Der Benutzer hat folgenden Inhalt aus der Zwischenablage geteilt:\n"
+"\n"
+"{text}"
+
+#. Translators: Label for the chat history field.
+#: globalPlugins/luma/dialogs.py:794
+msgid "&History:"
+msgstr "&Verlauf:"
+
+#. Translators: Label for the chat input field.
+#: globalPlugins/luma/dialogs.py:799
+msgid "&Message:"
+msgstr "&Nachricht:"
+
+#. Translators: Button to send the message.
+#: globalPlugins/luma/dialogs.py:807
+msgid "&Send"
+msgstr "&Senden"
+
+#. Translators: Prefix for the user's message in chat history.
+#: globalPlugins/luma/dialogs.py:837 globalPlugins/luma/dialogs.py:838
+msgid "You: "
+msgstr "Du: "
+
+#. Translators: Indicator shown while waiting for the AI response.
+#: globalPlugins/luma/dialogs.py:842 globalPlugins/luma/dialogs.py:868
+#: globalPlugins/luma/dialogs.py:883
+msgid "AI: (thinking...)"
+msgstr "KI: (denkt nach...)"
+
+#. Translators: Prefix for the AI's message in chat history.
+#: globalPlugins/luma/dialogs.py:873
+msgid "AI: "
+msgstr "KI: "
+
+#. Translators: Error message shown in chat history. {error} is the detail.
+#. Translators: Spoken error message for chat failures.
+#. Translators: Spoken when an API request fails. {error} is the error detail.
+#: globalPlugins/luma/dialogs.py:888 globalPlugins/luma/dialogs.py:890
+#: globalPlugins/luma/result_handler.py:53
+#, python-brace-format
+msgid "Error: {error}"
+msgstr "Fehler: {error}"
+
+#. Translators: Error when a file type is not supported. {ext} is the file extension.
+#: globalPlugins/luma/file_handler.py:25
+#, python-brace-format
+msgid "Unsupported file type: {ext}"
+msgstr "Nicht unterstützter Dateityp: {ext}"
+
+#. Translators: Error when the API key is invalid (HTTP 401).
+#: globalPlugins/luma/provider.py:279
+msgid "Authentication failed. Please check your API key."
+msgstr "Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren API-Schlüssel."
+
+#. Translators: Error when the API key lacks permissions (HTTP 403).
+#: globalPlugins/luma/provider.py:282
+msgid "Access denied. Your API key may lack the required permissions."
+msgstr "Zugriff verweigert. Ihrem API-Schlüssel fehlen möglicherweise die erforderlichen Berechtigungen."
+
+#. Translators: Error when the API endpoint URL is wrong (HTTP 404).
+#: globalPlugins/luma/provider.py:285
+msgid "API endpoint not found. Please check the API URL."
+msgstr "API-Endpunkt nicht gefunden. Bitte überprüfen Sie die API-URL."
+
+#. Translators: Error when too many requests are sent (HTTP 429).
+#: globalPlugins/luma/provider.py:288
+msgid "Rate limit exceeded. Please wait a moment and try again."
+msgstr "Anfragelimit überschritten. Bitte warten Sie einen Moment und versuchen Sie es erneut."
+
+#. Translators: Error for server-side failures. {code} is the HTTP status code.
+#: globalPlugins/luma/provider.py:291
+#, python-brace-format
+msgid "Server error ({code}). The provider may be experiencing issues."
+msgstr "Serverfehler ({code}). Der Anbieter hat möglicherweise Probleme."
+
+#. Translators: Generic HTTP error. {code} is the HTTP status code.
+#: globalPlugins/luma/provider.py:293
+#, python-brace-format
+msgid "HTTP error {code} from the API."
+msgstr "HTTP-Fehler {code} von der API."
+
+#. Translators: Error when the API server refuses the connection.
+#: globalPlugins/luma/provider.py:298
+msgid "Connection refused. Is the API server running?"
+msgstr "Verbindung abgelehnt. Läuft der API-Server?"
+
+#. Translators: Error when the API server hostname cannot be resolved.
+#: globalPlugins/luma/provider.py:301
+msgid "Could not resolve the API server address. Please check the URL."
+msgstr "Die Adresse des API-Servers konnte nicht aufgelöst werden. Bitte überprüfen Sie die URL."
+
+#. Translators: Generic network error. {error} is the technical detail.
+#: globalPlugins/luma/provider.py:303
+#, python-brace-format
+msgid "Network error: {error}"
+msgstr "Netzwerkfehler: {error}"
+
+#. Translators: Error when an API request times out. {url} is the server address.
+#: globalPlugins/luma/provider.py:309
+#, python-brace-format
+msgid "Request timed out. The server at {url} did not respond in time."
+msgstr "Zeitüberschreitung. Der Server unter {url} hat nicht rechtzeitig geantwortet."
+
+#. Translators: Default title for the Luma result window.
+#: globalPlugins/luma/result_handler.py:33
+msgid "Luma Result"
+msgstr "Luma-Ergebnis"
+
+#. Translators: Default title for a Luma error message.
+#: globalPlugins/luma/result_handler.py:49
+msgid "Luma Error"
+msgstr "Luma-Fehler"
+
+#. Translators: Button to copy the result text to the clipboard.
+#: globalPlugins/luma/result_handler.py:83
+msgid "&Copy"
+msgstr "&Kopieren"
+
+#. Translators: Spoken when the result text has been copied to clipboard.
+#: globalPlugins/luma/result_handler.py:105
+msgid "Copied to clipboard"
+msgstr "In Zwischenablage kopiert"
