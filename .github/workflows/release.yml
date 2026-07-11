@@ -1,13 +1,19 @@
 name: Release
 
 # Builds the .nvda-addon package and publishes a GitHub release whenever a
-# version tag (v*) is pushed. Release notes are taken from
-# .github/release-notes/<tag>.md when present.
+# version tag (v*) is pushed, or on manual dispatch with a tag name (the
+# tag is then created on the dispatched ref). Release notes are taken from
+# .github/release-notes/<tag>.md.
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to create (e.g. v0.1.1)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -17,6 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Determine release tag
+        id: tag
+        run: echo "tag=${{ inputs.tag || github.ref_name }}" >> "$GITHUB_OUTPUT"
 
       - name: Build add-on package
         run: python3 build.py
@@ -37,9 +47,10 @@ jobs:
           path: ${{ steps.artifact.outputs.file }}
 
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ github.sha }}
           name: Luma ${{ steps.artifact.outputs.version }}
-          body_path: .github/release-notes/${{ github.ref_name }}.md
+          body_path: .github/release-notes/${{ steps.tag.outputs.tag }}.md
           files: ${{ steps.artifact.outputs.file }}
