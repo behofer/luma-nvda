@@ -30,8 +30,9 @@ you tailor Luma to your workflow.
   vision-capable AI model for description.
 * **Clipboard Processing:** Process text or image content from the clipboard
   with any skill.
-* **Camera Capture:** Capture a frame from your webcam and process it with a
-  skill — great for describing physical objects, documents, or your
+* **Camera & Scanner Capture:** Capture a frame from any connected webcam or
+  scan a page from a flatbed/document scanner and process it with a skill —
+  great for describing physical objects, printed documents, or your
   surroundings.
 * **File Recognition:** Process the file selected in File Explorer (images,
   PDFs, PowerPoint slides).

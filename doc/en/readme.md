@@ -8,7 +8,7 @@
 
 * **Screen & Object Description:** Capture the entire screen, the current application window, or a specific navigator object and send it to a vision-capable AI model for description.
 * **Clipboard Processing:** Process text or image content from the clipboard with any skill.
-* **Camera Capture:** Capture a frame from your webcam and process it with a skill — great for describing physical objects, documents, or your surroundings.
+* **Camera & Scanner Capture:** Capture a frame from any connected webcam or scan a page from a flatbed/document scanner and process it with a skill — great for describing physical objects, printed documents, or your surroundings.
 * **Text Chat:** Have a back-and-forth conversation with an AI, optionally including a screenshot as context.
 * **Customizable Skills:** Define reusable prompt templates as Markdown files with YAML frontmatter. Each skill can specify its own provider, model, and temperature.
 * **Preset Providers:** OpenAI, Anthropic, Google Gemini, and OpenRouter are built in — just set your API key.
@@ -39,8 +39,8 @@
 | `NVDA+Shift+A` (double press) | Open text chat with the application window as context |
 | `NVDA+Shift+C` | Process clipboard content with the active skill |
 | `NVDA+Shift+C` (double press) | Open text chat with clipboard content as context |
-| `NVDA+Shift+L` | Capture a webcam frame and process with the active skill |
-| `NVDA+Shift+L` (double press) | Capture a webcam frame and open text chat |
+| `NVDA+Shift+L` | Pick a webcam or scanner, capture an image, and process with the active skill |
+| `NVDA+Shift+L` (double press) | Pick a webcam or scanner, capture an image, and open text chat |
 | `NVDA+Shift+T` | Open text chat |
 | `NVDA+Shift+Space` | Cycle to the next active skill |
 | `NVDA+Shift+1` to `0` | Execute a user-configured shortcut |
@@ -116,7 +116,7 @@ The Luma submenu appears under NVDA > Tools > Luma:
 * **Process Entire Screen** -- Run the active skill on a full-screen capture.
 * **Process Current Application** -- Run the active skill on the current application window.
 * **Process Clipboard** -- Process text or image from the clipboard with the active skill.
-* **Process Camera** -- Capture a webcam frame and process with the active skill.
+* **Process Camera or Scanner** -- Pick a connected webcam or scanner, capture an image, and process with the active skill.
 * **Text Chat** -- Open a conversational chat window.
 * **Shortcuts...** -- Map `NVDA+Shift+1` through `0` to skill/scope combinations.
 * **Settings...** -- Set the default provider, model, and output preferences.

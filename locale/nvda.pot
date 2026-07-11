@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Luma 0.1.0\n"
+"Project-Id-Version: Luma 0.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 20:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -58,10 +58,10 @@ msgstr ""
 msgid "Process &Clipboard"
 msgstr ""
 
-#. Translators: Tools menu item to process camera image.
-#. Translators: Popup menu item to process camera image.
+#. Translators: Tools menu item to process an image from a camera or scanner.
+#. Translators: Popup menu item to process an image from a camera or scanner.
 #: globalPlugins/luma/__init__.py:103 globalPlugins/luma/__init__.py:429
-msgid "Process Ca&mera"
+msgid "Process Ca&mera or Scanner"
 msgstr ""
 
 #. Translators: Tools menu item to open text chat.
@@ -158,7 +158,8 @@ msgstr ""
 msgid "&Active Skill"
 msgstr ""
 
-#. Translators: Spoken when the active skill is changed. {name} is the skill name.
+#. Translators: Spoken when the active skill is changed. {name} is the skill
+#. name.
 #: globalPlugins/luma/__init__.py:447 globalPlugins/luma/__init__.py:771
 #, python-brace-format
 msgid "Active skill: {name}"
@@ -166,8 +167,8 @@ msgstr ""
 
 #: globalPlugins/luma/__init__.py:475
 msgid ""
-"Process navigator object with active skill. Press twice quickly to open text "
-"chat."
+"Process navigator object with active skill. Press twice quickly to open text"
+" chat."
 msgstr ""
 
 #. Translators: Spoken when no file could be read.
@@ -186,7 +187,8 @@ msgstr ""
 msgid "File is too large to process."
 msgstr ""
 
-#. Translators: Source label for file processing messages. {filename} is the file name.
+#. Translators: Source label for file processing messages. {filename} is the
+#. file name.
 #: globalPlugins/luma/__init__.py:538
 #, python-brace-format
 msgid "file {filename}"
@@ -210,15 +212,11 @@ msgstr ""
 msgid "Processing clipboard using {skill}..."
 msgstr ""
 
+#. Translators: Description for the camera/scanner capture gesture.
 #: globalPlugins/luma/__init__.py:671
 msgid ""
-"Process camera image with active skill. Press twice quickly to open text "
-"chat."
-msgstr ""
-
-#. Translators: Spoken when no camera is detected.
-#: globalPlugins/luma/__init__.py:702
-msgid "No camera found."
+"Process an image from a camera or scanner with active skill. Press twice "
+"quickly to open text chat."
 msgstr ""
 
 #. Translators: Spoken when camera capture begins.
@@ -312,7 +310,8 @@ msgstr ""
 msgid "Shortcut {key} is not fully configured."
 msgstr ""
 
-#. Translators: Spoken when a shortcut references a missing skill. {name} is the name.
+#. Translators: Spoken when a shortcut references a missing skill. {name} is
+#. the name.
 #: globalPlugins/luma/__init__.py:855
 #, python-brace-format
 msgid "Skill \"{name}\" not found."
@@ -442,7 +441,8 @@ msgstr ""
 msgid "Fetching models..."
 msgstr ""
 
-#. Translators: Spoken when models have been fetched. {count} is the number found.
+#. Translators: Spoken when models have been fetched. {count} is the number
+#. found.
 #. Translators: Spoken when models have been fetched. {count} is the number.
 #: globalPlugins/luma/dialogs.py:291 globalPlugins/luma/dialogs.py:562
 #, python-brace-format
@@ -454,7 +454,8 @@ msgstr ""
 msgid "No models found."
 msgstr ""
 
-#. Translators: Spoken when fetching models fails. {error} is the error detail.
+#. Translators: Spoken when fetching models fails. {error} is the error
+#. detail.
 #. Translators: Spoken when model fetching fails. {error} is the detail.
 #: globalPlugins/luma/dialogs.py:299 globalPlugins/luma/dialogs.py:571
 #, python-brace-format
@@ -645,7 +646,8 @@ msgstr ""
 msgid "Error: {error}"
 msgstr ""
 
-#. Translators: Error when a file type is not supported. {ext} is the file extension.
+#. Translators: Error when a file type is not supported. {ext} is the file
+#. extension.
 #: globalPlugins/luma/file_handler.py:25
 #, python-brace-format
 msgid "Unsupported file type: {ext}"
@@ -671,7 +673,8 @@ msgstr ""
 msgid "Rate limit exceeded. Please wait a moment and try again."
 msgstr ""
 
-#. Translators: Error for server-side failures. {code} is the HTTP status code.
+#. Translators: Error for server-side failures. {code} is the HTTP status
+#. code.
 #: globalPlugins/luma/provider.py:291
 #, python-brace-format
 msgid "Server error ({code}). The provider may be experiencing issues."
@@ -699,7 +702,8 @@ msgstr ""
 msgid "Network error: {error}"
 msgstr ""
 
-#. Translators: Error when an API request times out. {url} is the server address.
+#. Translators: Error when an API request times out. {url} is the server
+#. address.
 #: globalPlugins/luma/provider.py:309
 #, python-brace-format
 msgid "Request timed out. The server at {url} did not respond in time."
@@ -723,4 +727,52 @@ msgstr ""
 #. Translators: Spoken when the result text has been copied to clipboard.
 #: globalPlugins/luma/result_handler.py:105
 msgid "Copied to clipboard"
+msgstr ""
+
+#. Translators: Fallback name for a webcam whose driver reports no name.
+#. {number} is the 1-based device number.
+msgid "Camera {number}"
+msgstr ""
+
+#. Translators: Fallback name for a scanner whose driver reports no name.
+#. {number} is the 1-based device number.
+msgid "Scanner {number}"
+msgstr ""
+
+#. Translators: Spoken while cameras and scanners are being enumerated.
+msgid "Looking for cameras and scanners..."
+msgstr ""
+
+#. Translators: Spoken when neither a camera nor a scanner is detected.
+msgid "No camera or scanner found."
+msgstr ""
+
+#. Translators: Camera entry in the device selection list. {name} is the
+#. device name.
+msgid "Camera: {name}"
+msgstr ""
+
+#. Translators: Scanner entry in the device selection list. {name} is the
+#. device name.
+msgid "Scanner: {name}"
+msgstr ""
+
+#. Translators: Prompt in the camera/scanner selection dialog.
+msgid "Select the device to capture an image from:"
+msgstr ""
+
+#. Translators: Title of the camera/scanner selection dialog.
+msgid "Luma Device Selection"
+msgstr ""
+
+#. Translators: Spoken when scanning begins. Scanning can take a while.
+msgid "Scanning... This may take a moment."
+msgstr ""
+
+#. Translators: Source label for scanned image processing.
+msgid "scanned image"
+msgstr ""
+
+#. Translators: Spoken when scanning fails.
+msgid "Failed to scan from scanner."
 msgstr ""

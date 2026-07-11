@@ -190,8 +190,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		item = self._tools_menu.Append(wx.ID_ANY, _("Process &Clipboard"))
 		nvda_gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self._on_menu_clipboard, item)
 
-		# Translators: Tools menu item to process camera image.
-		item = self._tools_menu.Append(wx.ID_ANY, _("Process Ca&mera"))
+		# Translators: Tools menu item to process an image from a camera or scanner.
+		item = self._tools_menu.Append(wx.ID_ANY, _("Process Ca&mera or Scanner"))
 		nvda_gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, self._on_menu_camera, item)
 
 		# Translators: Tools menu item to analyze a video URL.
@@ -675,8 +675,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		item_app = menu.Append(wx.ID_ANY, _("Process Current &Application"))
 		# Translators: Popup menu item to process clipboard content.
 		item_clipboard = menu.Append(wx.ID_ANY, _("Process &Clipboard"))
-		# Translators: Popup menu item to process camera image.
-		item_camera = menu.Append(wx.ID_ANY, _("Process Ca&mera"))
+		# Translators: Popup menu item to process an image from a camera or scanner.
+		item_camera = menu.Append(wx.ID_ANY, _("Process Ca&mera or Scanner"))
 		# Translators: Popup menu item to analyze a video URL.
 		item_video = menu.Append(wx.ID_ANY, _("Analyze &Video URL..."))
 		# Translators: Popup menu item to open text chat.
@@ -1094,11 +1094,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		dlg.Show()
 		dlg.Raise()
 
-	# -- Camera --
+	# -- Camera / scanner --
 
-	# Translators: Description for the camera capture gesture.
+	# Translators: Description for the camera/scanner capture gesture.
 	@scriptHandler.script(
-		description=_("Process camera image with active skill. Press twice quickly to open text chat."),
+		description=_("Process an image from a camera or scanner with active skill. Press twice quickly to open text chat."),
 	)
 	def script_processCamera(self, gesture):
 		self._camera_press.tap()
@@ -1112,22 +1112,80 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._capture_and_process_camera(skill, open_chat=False)
 
 	def _capture_and_process_camera(self, skill, *, open_chat=False):
-		"""Capture a camera frame in the background and process it.
+		"""Let the user pick a camera or scanner, capture, and process.
 
+		Enumerates webcams (ESCAPI) and scanners (WIA) in the background,
+		shows a selection list, then captures from the chosen device.
 		If *open_chat* is True, opens text chat with the image.
 		Otherwise processes with *skill*.
 		"""
-		from .camera import is_camera_available
+		# Translators: Spoken while cameras and scanners are being enumerated.
+		ui.message(_("Looking for cameras and scanners..."))
 
-		if not is_camera_available():
-			# Translators: Spoken when no camera is detected.
-			ui.message(_("No camera found."))
-			return
+		from .worker import run_in_background
 
-		# Translators: Spoken when camera capture begins.
-		ui.message(_("Capturing from camera..."))
+		def _enumerate_devices():
+			"""Background thread: collect (kind, id, name) device tuples."""
+			from . import camera, scanner
+
+			devices = []
+			for index, name in enumerate(camera.get_camera_names()):
+				devices.append(("camera", index, name))
+			for device_id, name in scanner.list_scanners():
+				devices.append(("scanner", device_id, name))
+			return devices
+
+		def _on_enumerated(devices):
+			if not devices:
+				# Translators: Spoken when neither a camera nor a scanner is detected.
+				ui.message(_("No camera or scanner found."))
+				return
+			self._pick_device_and_capture(devices, skill, open_chat)
+
+		def _on_enumerate_error(exc):
+			log.exception("Device enumeration failed")
+			# Translators: Spoken when neither a camera nor a scanner is detected.
+			ui.message(_("No camera or scanner found."))
+
+		run_in_background(
+			_enumerate_devices,
+			on_success=_on_enumerated,
+			on_error=_on_enumerate_error,
+		)
+
+	def _pick_device_and_capture(self, devices, skill, open_chat):
+		"""Show the device list and start capture from the chosen device.
+
+		*devices* is a list of ``(kind, device_id, name)`` tuples where
+		*kind* is ``"camera"`` or ``"scanner"``.  Runs on the main thread.
+		"""
+		labels = []
+		for kind, _device_id, name in devices:
+			if kind == "camera":
+				# Translators: Camera entry in the device selection list. {name} is the device name.
+				labels.append(_("Camera: {name}").format(name=name))
+			else:
+				# Translators: Scanner entry in the device selection list. {name} is the device name.
+				labels.append(_("Scanner: {name}").format(name=name))
+
+		dlg = wx.SingleChoiceDialog(
+			nvda_gui.mainFrame,
+			# Translators: Prompt in the camera/scanner selection dialog.
+			_("Select the device to capture an image from:"),
+			# Translators: Title of the camera/scanner selection dialog.
+			_("Luma Device Selection"),
+			labels,
+		)
+		dlg.Raise()
+		try:
+			if dlg.ShowModal() != wx.ID_OK:
+				return
+			kind, device_id, name = devices[dlg.GetSelection()]
+		finally:
+			dlg.Destroy()
 
 		from .camera import capture_camera
+		from .scanner import scan_image
 		from .worker import run_in_background
 
 		# Cancel any previously running processing task.
@@ -1135,28 +1193,43 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._processing_cancel.set()
 		self._processing_cancel = threading.Event()
 
+		if kind == "camera":
+			# Translators: Spoken when camera capture begins.
+			ui.message(_("Capturing from camera..."))
+			target, args = capture_camera, (device_id,)
+			# Translators: Source label for camera image processing.
+			source_label = _("camera image")
+			# Translators: Spoken when camera capture fails.
+			failure_message = _("Failed to capture from camera.")
+		else:
+			# Translators: Spoken when scanning begins. Scanning can take a while.
+			ui.message(_("Scanning... This may take a moment."))
+			target, args = scan_image, (device_id,)
+			# Translators: Source label for scanned image processing.
+			source_label = _("scanned image")
+			# Translators: Spoken when scanning fails.
+			failure_message = _("Failed to scan from scanner.")
+
 		def on_success(image_base64):
 			if image_base64 is None:
-				# Translators: Spoken when camera capture fails.
-				ui.message(_("Failed to capture from camera."))
+				ui.message(failure_message)
 				return
 			if open_chat:
 				self._open_text_chat(image_base64=image_base64)
 			else:
-				# Translators: Source label for camera image processing.
 				self._execute_skill_with_scope(
 					skill, "navigator",
 					image_base64=image_base64,
-					source_label=_("camera image"),
+					source_label=source_label,
 				)
 
 		def on_error(exc):
-			log.exception("Camera capture failed")
-			# Translators: Spoken when camera capture fails.
-			ui.message(_("Failed to capture from camera."))
+			log.exception("Capture from %s failed", kind)
+			ui.message(failure_message)
 
 		run_in_background(
-			capture_camera,
+			target,
+			args=args,
 			on_success=on_success,
 			on_error=on_error,
 			cancel_event=self._processing_cancel,
