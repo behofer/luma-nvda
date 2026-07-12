@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Luma 0.1.0\n"
+"Project-Id-Version: Luma 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 20:25+0100\n"
 "PO-Revision-Date: 2026-03-20 20:30+0100\n"
@@ -57,11 +57,11 @@ msgstr "Gesamten &Bildschirm verarbeiten"
 msgid "Process &Clipboard"
 msgstr "&Zwischenablage verarbeiten"
 
-#. Translators: Tools menu item to process camera image.
-#. Translators: Popup menu item to process camera image.
+#. Translators: Tools menu item to process an image from a camera or scanner.
+#. Translators: Popup menu item to process an image from a camera or scanner.
 #: globalPlugins/luma/__init__.py:103 globalPlugins/luma/__init__.py:429
-msgid "Process Ca&mera"
-msgstr "Ka&mera verarbeiten"
+msgid "Process Ca&mera or Scanner"
+msgstr "Ka&mera oder Scanner verarbeiten"
 
 #. Translators: Tools menu item to open text chat.
 #. Translators: Popup menu item to open text chat.
@@ -162,7 +162,8 @@ msgstr "Luma-Hauptmenü öffnen"
 msgid "&Active Skill"
 msgstr "&Aktiver Skill"
 
-#. Translators: Spoken when the active skill is changed. {name} is the skill name.
+#. Translators: Spoken when the active skill is changed. {name} is the skill
+#. name.
 #: globalPlugins/luma/__init__.py:447 globalPlugins/luma/__init__.py:771
 #, python-brace-format
 msgid "Active skill: {name}"
@@ -170,8 +171,8 @@ msgstr "Aktiver Skill: {name}"
 
 #: globalPlugins/luma/__init__.py:475
 msgid ""
-"Process navigator object with active skill. Press twice quickly to open text "
-"chat."
+"Process navigator object with active skill. Press twice quickly to open text"
+" chat."
 msgstr ""
 "Navigator-Objekt mit aktivem Skill verarbeiten. Zweimal schnell drücken, um "
 "den Text-Chat zu öffnen."
@@ -192,7 +193,8 @@ msgstr "Dateityp {ext} wird nicht unterstützt."
 msgid "File is too large to process."
 msgstr "Datei ist zu groß zum Verarbeiten."
 
-#. Translators: Source label for file processing messages. {filename} is the file name.
+#. Translators: Source label for file processing messages. {filename} is the
+#. file name.
 #: globalPlugins/luma/__init__.py:538
 #, python-brace-format
 msgid "file {filename}"
@@ -220,18 +222,14 @@ msgstr ""
 msgid "Processing clipboard using {skill}..."
 msgstr "Verarbeite Zwischenablage mit {skill}..."
 
+#. Translators: Description for the camera/scanner capture gesture.
 #: globalPlugins/luma/__init__.py:671
 msgid ""
-"Process camera image with active skill. Press twice quickly to open text "
-"chat."
+"Process an image from a camera or scanner with active skill. Press twice "
+"quickly to open text chat."
 msgstr ""
-"Kamerabild mit aktivem Skill verarbeiten. Zweimal schnell drücken, um den "
-"Text-Chat zu öffnen."
-
-#. Translators: Spoken when no camera is detected.
-#: globalPlugins/luma/__init__.py:702
-msgid "No camera found."
-msgstr "Keine Kamera gefunden."
+"Bild von Kamera oder Scanner mit aktivem Skill verarbeiten. Zweimal schnell "
+"drücken, um den Text-Chat zu öffnen."
 
 #. Translators: Spoken when camera capture begins.
 #: globalPlugins/luma/__init__.py:706
@@ -324,7 +322,8 @@ msgstr "Keine Schnelltaste für NVDA+Umschalt+{key} zugewiesen."
 msgid "Shortcut {key} is not fully configured."
 msgstr "Schnelltaste {key} ist nicht vollständig konfiguriert."
 
-#. Translators: Spoken when a shortcut references a missing skill. {name} is the name.
+#. Translators: Spoken when a shortcut references a missing skill. {name} is
+#. the name.
 #: globalPlugins/luma/__init__.py:855
 #, python-brace-format
 msgid "Skill \"{name}\" not found."
@@ -454,7 +453,8 @@ msgstr "Bitte wählen Sie zuerst einen Anbieter aus."
 msgid "Fetching models..."
 msgstr "Modelle werden abgerufen..."
 
-#. Translators: Spoken when models have been fetched. {count} is the number found.
+#. Translators: Spoken when models have been fetched. {count} is the number
+#. found.
 #. Translators: Spoken when models have been fetched. {count} is the number.
 #: globalPlugins/luma/dialogs.py:291 globalPlugins/luma/dialogs.py:562
 #, python-brace-format
@@ -466,7 +466,8 @@ msgstr "{count} Modell(e) gefunden."
 msgid "No models found."
 msgstr "Keine Modelle gefunden."
 
-#. Translators: Spoken when fetching models fails. {error} is the error detail.
+#. Translators: Spoken when fetching models fails. {error} is the error
+#. detail.
 #. Translators: Spoken when model fetching fails. {error} is the detail.
 #: globalPlugins/luma/dialogs.py:299 globalPlugins/luma/dialogs.py:571
 #, python-brace-format
@@ -588,7 +589,8 @@ msgstr "Schnelltasten konfigurieren"
 #: globalPlugins/luma/dialogs.py:660
 msgid "Assign a skill and scope to each NVDA+Shift shortcut key (1-0):"
 msgstr ""
-"Weisen Sie jeder NVDA+Umschalt-Schnelltaste (1-0) einen Skill und Bereich zu:"
+"Weisen Sie jeder NVDA+Umschalt-Schnelltaste (1-0) einen Skill und Bereich "
+"zu:"
 
 #: globalPlugins/luma/dialogs.py:664 globalPlugins/luma/dialogs.py:665
 msgid "(none)"
@@ -662,7 +664,8 @@ msgstr "KI: "
 msgid "Error: {error}"
 msgstr "Fehler: {error}"
 
-#. Translators: Error when a file type is not supported. {ext} is the file extension.
+#. Translators: Error when a file type is not supported. {ext} is the file
+#. extension.
 #: globalPlugins/luma/file_handler.py:25
 #, python-brace-format
 msgid "Unsupported file type: {ext}"
@@ -671,12 +674,15 @@ msgstr "Nicht unterstützter Dateityp: {ext}"
 #. Translators: Error when the API key is invalid (HTTP 401).
 #: globalPlugins/luma/provider.py:279
 msgid "Authentication failed. Please check your API key."
-msgstr "Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren API-Schlüssel."
+msgstr ""
+"Authentifizierung fehlgeschlagen. Bitte überprüfen Sie Ihren API-Schlüssel."
 
 #. Translators: Error when the API key lacks permissions (HTTP 403).
 #: globalPlugins/luma/provider.py:282
 msgid "Access denied. Your API key may lack the required permissions."
-msgstr "Zugriff verweigert. Ihrem API-Schlüssel fehlen möglicherweise die erforderlichen Berechtigungen."
+msgstr ""
+"Zugriff verweigert. Ihrem API-Schlüssel fehlen möglicherweise die "
+"erforderlichen Berechtigungen."
 
 #. Translators: Error when the API endpoint URL is wrong (HTTP 404).
 #: globalPlugins/luma/provider.py:285
@@ -686,9 +692,12 @@ msgstr "API-Endpunkt nicht gefunden. Bitte überprüfen Sie die API-URL."
 #. Translators: Error when too many requests are sent (HTTP 429).
 #: globalPlugins/luma/provider.py:288
 msgid "Rate limit exceeded. Please wait a moment and try again."
-msgstr "Anfragelimit überschritten. Bitte warten Sie einen Moment und versuchen Sie es erneut."
+msgstr ""
+"Anfragelimit überschritten. Bitte warten Sie einen Moment und versuchen Sie "
+"es erneut."
 
-#. Translators: Error for server-side failures. {code} is the HTTP status code.
+#. Translators: Error for server-side failures. {code} is the HTTP status
+#. code.
 #: globalPlugins/luma/provider.py:291
 #, python-brace-format
 msgid "Server error ({code}). The provider may be experiencing issues."
@@ -708,7 +717,9 @@ msgstr "Verbindung abgelehnt. Läuft der API-Server?"
 #. Translators: Error when the API server hostname cannot be resolved.
 #: globalPlugins/luma/provider.py:301
 msgid "Could not resolve the API server address. Please check the URL."
-msgstr "Die Adresse des API-Servers konnte nicht aufgelöst werden. Bitte überprüfen Sie die URL."
+msgstr ""
+"Die Adresse des API-Servers konnte nicht aufgelöst werden. Bitte überprüfen "
+"Sie die URL."
 
 #. Translators: Generic network error. {error} is the technical detail.
 #: globalPlugins/luma/provider.py:303
@@ -716,11 +727,14 @@ msgstr "Die Adresse des API-Servers konnte nicht aufgelöst werden. Bitte überp
 msgid "Network error: {error}"
 msgstr "Netzwerkfehler: {error}"
 
-#. Translators: Error when an API request times out. {url} is the server address.
+#. Translators: Error when an API request times out. {url} is the server
+#. address.
 #: globalPlugins/luma/provider.py:309
 #, python-brace-format
 msgid "Request timed out. The server at {url} did not respond in time."
-msgstr "Zeitüberschreitung. Der Server unter {url} hat nicht rechtzeitig geantwortet."
+msgstr ""
+"Zeitüberschreitung. Der Server unter {url} hat nicht rechtzeitig "
+"geantwortet."
 
 #. Translators: Default title for the Luma result window.
 #: globalPlugins/luma/result_handler.py:33
@@ -741,3 +755,51 @@ msgstr "&Kopieren"
 #: globalPlugins/luma/result_handler.py:105
 msgid "Copied to clipboard"
 msgstr "In Zwischenablage kopiert"
+
+#. Translators: Fallback name for a webcam whose driver reports no name.
+#. {number} is the 1-based device number.
+msgid "Camera {number}"
+msgstr "Kamera {number}"
+
+#. Translators: Fallback name for a scanner whose driver reports no name.
+#. {number} is the 1-based device number.
+msgid "Scanner {number}"
+msgstr "Scanner {number}"
+
+#. Translators: Spoken while cameras and scanners are being enumerated.
+msgid "Looking for cameras and scanners..."
+msgstr "Suche nach Kameras und Scannern..."
+
+#. Translators: Spoken when neither a camera nor a scanner is detected.
+msgid "No camera or scanner found."
+msgstr "Keine Kamera und kein Scanner gefunden."
+
+#. Translators: Camera entry in the device selection list. {name} is the
+#. device name.
+msgid "Camera: {name}"
+msgstr "Kamera: {name}"
+
+#. Translators: Scanner entry in the device selection list. {name} is the
+#. device name.
+msgid "Scanner: {name}"
+msgstr "Scanner: {name}"
+
+#. Translators: Prompt in the camera/scanner selection dialog.
+msgid "Select the device to capture an image from:"
+msgstr "Wählen Sie das Gerät aus, von dem ein Bild aufgenommen werden soll:"
+
+#. Translators: Title of the camera/scanner selection dialog.
+msgid "Luma Device Selection"
+msgstr "Luma-Geräteauswahl"
+
+#. Translators: Spoken when scanning begins. Scanning can take a while.
+msgid "Scanning... This may take a moment."
+msgstr "Scanvorgang läuft... Dies kann einen Moment dauern."
+
+#. Translators: Source label for scanned image processing.
+msgid "scanned image"
+msgstr "gescanntes Bild"
+
+#. Translators: Spoken when scanning fails.
+msgid "Failed to scan from scanner."
+msgstr "Scannen fehlgeschlagen."
