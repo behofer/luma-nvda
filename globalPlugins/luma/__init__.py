@@ -429,6 +429,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if image_base64 is None:
 			if scope == "navigator":
 				nav = nvda_api.getNavigatorObject()
+				# Only ever the navigator object itself — never a full-screen
+				# fallback, which would describe unrelated content.
+				if capture.get_object_rect(nav) is None:
+					# Translators: Spoken when the navigator object cannot be captured
+					# because it has no visible area on screen.
+					ui.message(_("The navigator object has no visible location on screen."))
+					return
 				image_base64 = capture.capture_object(nav)
 			elif scope == "screen":
 				image_base64 = capture.capture_screen()
@@ -775,6 +782,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				from . import capture
 				nav = nvda_api.getNavigatorObject()
 				image = capture.capture_object(nav)
+				if image is None:
+					# Translators: Spoken when the navigator object cannot be captured
+					# because it has no visible area on screen.
+					ui.message(_("The navigator object has no visible location on screen."))
 				self._open_text_chat(image_base64=image)
 		else:
 			# Single press — check for file first, then fall back to navigator.

@@ -48,40 +48,44 @@ def capture_screen() -> str | None:
 
 
 def capture_object(nav_object) -> str | None:
-	"""Capture the bounding rectangle of an NVDA navigator object.
+	"""Capture exactly the on-screen area of an NVDA navigator object.
 
-	*nav_object* should be an NVDA ``NVDAObject`` that exposes a
-	``location`` attribute (a ``RectLTWH`` or compatible tuple of
-	``(left, top, width, height)``).
+	*nav_object* should be an NVDA ``NVDAObject``.  Its bounding rectangle
+	is resolved by :func:`get_object_rect`, which also handles objects that
+	report no (or a degenerate) location of their own — e.g. a link wrapping
+	an image in Chromium — by using the extent of their descendants.
 
-	Falls back to a full-screen capture if the object has no location.
-	Returns ``None`` on failure.
+	Never falls back to a full-screen capture: sending the whole screen when
+	the user asked about one object is misleading.  Returns ``None`` if no
+	visible rectangle can be resolved or the capture fails.
 	"""
-	location = getattr(nav_object, "location", None)
-	if not location:
-		log.debug("Navigator object has no location — falling back to full screen.")
-		return capture_screen()
-
-	try:
-		left, top, width, height = location
-	except (TypeError, ValueError):
-		log.warning("Could not unpack navigator object location: %r", location)
-		return capture_screen()
-
-	if width <= 0 or height <= 0:
-		log.debug("Navigator object has zero-area location — falling back to full screen.")
-		return capture_screen()
-
-	try:
-		screen_dc = wx.ScreenDC()
-		bmp = wx.Bitmap(width, height)
-		mem_dc = wx.MemoryDC(bmp)
-		mem_dc.Blit(0, 0, width, height, screen_dc, left, top)
-		mem_dc.SelectObject(wx.NullBitmap)
-		return _bitmap_to_base64(bmp)
-	except Exception:
-		log.exception("Failed to capture navigator object at %r", location)
+	rect = get_object_rect(nav_object)
+	if rect is None:
+		log.debug("Navigator object has no visible location: %r", nav_object)
 		return None
+	return _capture_rect(rect)
+
+
+def get_object_rect(nav_object) -> tuple[int, int, int, int] | None:
+	"""Return the visible ``(left, top, width, height)`` of *nav_object*.
+
+	Uses the object's own location when it has a positive area.  Otherwise
+	(Chromium reports e.g. an inline ``<a>`` containing an image with zero
+	width or height) the union of its descendants' locations is used, which
+	is the area the object visually covers.  The result is clipped to the
+	virtual screen; ``None`` means nothing visible could be resolved.
+	"""
+	rect = _location_of(nav_object)
+	if rect is None:
+		rect = _descendants_union(nav_object)
+		if rect is not None:
+			log.debug(
+				"Navigator object has no usable location — using descendants' extent %r.",
+				rect,
+			)
+	if rect is None:
+		return None
+	return _clip_to_virtual_screen(rect)
 
 
 def capture_app() -> str | None:
@@ -103,7 +107,11 @@ def capture_app() -> str | None:
 		return capture_screen()
 
 	_ensure_maximized(fg)
-	return capture_object(fg)
+	rect = get_object_rect(fg)
+	if rect is None:
+		log.debug("Foreground window has no location — falling back to full screen.")
+		return capture_screen()
+	return _capture_rect(rect)
 
 
 # ---------------------------------------------------------------------------
@@ -144,6 +152,112 @@ def get_app_region() -> tuple[int, int, int, int] | None:
 			return None
 		return (left, top, width, height)
 	except (TypeError, ValueError):
+		return None
+
+
+# Bounds for the descendant walk in :func:`_descendants_union`.  Keeps the
+# walk fast on the main thread even for objects with large subtrees.
+_MAX_DESCENDANT_DEPTH = 6
+_MAX_DESCENDANTS = 200
+
+# GetSystemMetrics indices for the virtual screen (all monitors).
+_SM_XVIRTUALSCREEN = 76
+_SM_YVIRTUALSCREEN = 77
+_SM_CXVIRTUALSCREEN = 78
+_SM_CYVIRTUALSCREEN = 79
+
+
+def _location_of(obj) -> tuple[int, int, int, int] | None:
+	"""Return *obj*'s location as an ``(l, t, w, h)`` tuple if it has a positive area."""
+	try:
+		location = obj.location
+	except Exception:
+		return None
+	if not location:
+		return None
+	try:
+		left, top, width, height = location
+	except (TypeError, ValueError):
+		log.warning("Could not unpack object location: %r", location)
+		return None
+	if width <= 0 or height <= 0:
+		return None
+	return (int(left), int(top), int(width), int(height))
+
+
+def _descendants_union(obj) -> tuple[int, int, int, int] | None:
+	"""Return the bounding box of all descendants of *obj* that have a location.
+
+	Breadth-first, bounded by ``_MAX_DESCENDANT_DEPTH`` and
+	``_MAX_DESCENDANTS``.  A descendant with its own location is not
+	descended into further (its rectangle already covers its children).
+	"""
+	rects = []
+	visited = 0
+	level = [obj]
+	for _depth in range(_MAX_DESCENDANT_DEPTH):
+		next_level = []
+		for parent in level:
+			try:
+				child = parent.firstChild
+			except Exception:
+				child = None
+			while child is not None and visited < _MAX_DESCENDANTS:
+				visited += 1
+				rect = _location_of(child)
+				if rect is not None:
+					rects.append(rect)
+				else:
+					next_level.append(child)
+				try:
+					child = child.next
+				except Exception:
+					child = None
+		if not next_level or visited >= _MAX_DESCENDANTS:
+			break
+		level = next_level
+	if not rects:
+		return None
+	left = min(r[0] for r in rects)
+	top = min(r[1] for r in rects)
+	right = max(r[0] + r[2] for r in rects)
+	bottom = max(r[1] + r[3] for r in rects)
+	return (left, top, right - left, bottom - top)
+
+
+def _clip_to_virtual_screen(rect: tuple[int, int, int, int]) -> tuple[int, int, int, int] | None:
+	"""Clip *rect* to the virtual screen; ``None`` if it lies entirely off-screen."""
+	left, top, width, height = rect
+	try:
+		vs_left = _user32.GetSystemMetrics(_SM_XVIRTUALSCREEN)
+		vs_top = _user32.GetSystemMetrics(_SM_YVIRTUALSCREEN)
+		vs_right = vs_left + _user32.GetSystemMetrics(_SM_CXVIRTUALSCREEN)
+		vs_bottom = vs_top + _user32.GetSystemMetrics(_SM_CYVIRTUALSCREEN)
+	except Exception:
+		return rect
+	if vs_right <= vs_left or vs_bottom <= vs_top:
+		return rect
+	new_left = max(left, vs_left)
+	new_top = max(top, vs_top)
+	new_right = min(left + width, vs_right)
+	new_bottom = min(top + height, vs_bottom)
+	if new_right <= new_left or new_bottom <= new_top:
+		return None
+	return (new_left, new_top, new_right - new_left, new_bottom - new_top)
+
+
+def _capture_rect(rect: tuple[int, int, int, int]) -> str | None:
+	"""Capture the screen area *rect* ``(left, top, width, height)`` as base64 PNG."""
+	left, top, width, height = rect
+	try:
+		screen_dc = wx.ScreenDC()
+		bmp = wx.Bitmap(width, height)
+		mem_dc = wx.MemoryDC(bmp)
+		mem_dc.Blit(0, 0, width, height, screen_dc, left, top)
+		mem_dc.SelectObject(wx.NullBitmap)
+		return _bitmap_to_base64(bmp)
+	except Exception:
+		log.exception("Failed to capture screen area %r", rect)
 		return None
 
 

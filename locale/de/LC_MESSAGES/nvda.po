@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Luma 0.1.2\n"
+"Project-Id-Version: Luma 0.1.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-20 20:25+0100\n"
 "PO-Revision-Date: 2026-03-20 20:30+0100\n"
@@ -143,6 +143,12 @@ msgstr "Anwendung"
 #: globalPlugins/luma/__init__.py:326
 msgid "Failed to capture image."
 msgstr "Bildaufnahme fehlgeschlagen."
+
+#. Translators: Spoken when the navigator object cannot be captured
+#. because it has no visible area on screen.
+#: globalPlugins/luma/__init__.py:442 globalPlugins/luma/__init__.py:788
+msgid "The navigator object has no visible location on screen."
+msgstr "Das Navigatorobjekt hat keine sichtbare Position auf dem Bildschirm."
 
 #. Translators: Spoken when processing begins. {source} is what is being
 #. processed (e.g. "navigator object", "screen", "file photo.jpg").

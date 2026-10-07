@@ -140,6 +140,12 @@ msgstr ""
 msgid "Failed to capture image."
 msgstr ""
 
+#. Translators: Spoken when the navigator object cannot be captured
+#. because it has no visible area on screen.
+#: globalPlugins/luma/__init__.py:442 globalPlugins/luma/__init__.py:788
+msgid "The navigator object has no visible location on screen."
+msgstr ""
+
 #. Translators: Spoken when processing begins. {source} is what is being
 #. processed (e.g. "navigator object", "screen", "file photo.jpg").
 #. {skill} is the active skill name (e.g. "Describe").
