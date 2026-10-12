@@ -193,7 +193,11 @@ class ProvidersDialog(wx.Dialog):
 	def _refresh_custom(self) -> None:
 		self._custom_list.Clear()
 		for p in luma_config.get_custom_providers():
-			self._custom_list.Append(p.get("name", _("Unnamed")))
+			label = p.get("name", _("Unnamed"))
+			if p.get("type") == "OpenAICompatInteractionProvider":
+				# Translators: Suffix for a custom provider with Interaction Mode enabled.
+				label = _("{name} (interaction)").format(name=label)
+			self._custom_list.Append(label)
 		if self._custom_list.GetCount() > 0:
 			self._custom_list.SetSelection(0)
 
@@ -311,19 +315,73 @@ class CustomProviderEditDialog(wx.Dialog):
 		self._model_fetch_url = wx.TextCtrl(self, value=self._data.get("model_fetch_url", ""))
 		sizer.Add(self._model_fetch_url, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
 
+		# -- Interaction Mode (prompted computer use) --
+		is_interaction = self._data.get("type") == "OpenAICompatInteractionProvider"
+		# Translators: Checkbox to enable Interaction Mode (computer use) on a
+		# custom OpenAI-compatible provider serving a vision model such as Qwen3-VL.
+		self._interaction_cb = wx.CheckBox(
+			self, label=_("Enable &Interaction Mode (computer use with a vision model, e.g. Qwen3-VL)"),
+		)
+		self._interaction_cb.SetValue(is_interaction)
+		self._interaction_cb.Bind(wx.EVT_CHECKBOX, self._on_interaction_toggled)
+		sizer.Add(self._interaction_cb, flag=wx.LEFT | wx.TOP, border=10)
+
+		# Translators: Label for the coordinate format choice of an interaction provider.
+		sizer.Add(wx.StaticText(self, label=_("Coordinate f&ormat:")), flag=wx.LEFT | wx.TOP, border=10)
+		self._coord_modes = ("auto", "normalized", "pixels")
+		self._coord_choice = wx.Choice(self, choices=[
+			# Translators: Coordinate format option — detect from the model name.
+			_("Auto — detect from model name (recommended)"),
+			# Translators: Coordinate format option — normalised 0-1000 grid.
+			_("Normalized 0–1000 grid (Qwen3-VL, Gemini-style)"),
+			# Translators: Coordinate format option — absolute screenshot pixels.
+			_("Screenshot pixels (Qwen2.5-VL, UI-TARS)"),
+		])
+		current_mode = self._data.get("coordinate_mode", "auto")
+		self._coord_choice.SetSelection(
+			self._coord_modes.index(current_mode) if current_mode in self._coord_modes else 0,
+		)
+		sizer.Add(self._coord_choice, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=10)
+		self._coord_choice.Enable(is_interaction)
+
+		# Translators: Checkbox to enable two-stage click refinement (a zoomed-in
+		# second look before each click) for an interaction provider.
+		self._refine_cb = wx.CheckBox(
+			self, label=_("&Refine clicks with a zoomed-in second look (more accurate, one extra request per click)"),
+		)
+		self._refine_cb.SetValue(bool(self._data.get("refine_clicks", True)))
+		self._refine_cb.Enable(is_interaction)
+		sizer.Add(self._refine_cb, flag=wx.LEFT | wx.TOP, border=10)
+
 		btn_sizer = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
 		sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=10)
 
 		self.SetSizer(sizer)
-		self.SetSize((500, 320))
-		self.SetMinSize((400, 280))
+		self.SetSize((560, 460))
+		self.SetMinSize((440, 420))
 		self._name.SetFocus()
 
+	def _on_interaction_toggled(self, _event: wx.CommandEvent) -> None:
+		enabled = self._interaction_cb.GetValue()
+		self._coord_choice.Enable(enabled)
+		self._refine_cb.Enable(enabled)
+
 	def get_provider_dict(self) -> dict:
-		return {
+		data = {
 			"type": "OpenAICompatProvider",
 			"name": self._name.GetValue().strip(),
 			"api_url": self._api_url.GetValue().strip(),
 			"api_key": self._api_key.GetValue().strip(),
 			"model_fetch_url": self._model_fetch_url.GetValue().strip(),
 		}
+		if self._interaction_cb.GetValue():
+			data["type"] = "OpenAICompatInteractionProvider"
+			sel = self._coord_choice.GetSelection()
+			data["coordinate_mode"] = (
+				self._coord_modes[sel] if 0 <= sel < len(self._coord_modes) else "auto"
+			)
+			data["refine_clicks"] = self._refine_cb.GetValue()
+			# Preserve an image size a power user may have set in luma.json.
+			if "image_long_side" in self._data:
+				data["image_long_side"] = self._data["image_long_side"]
+		return data

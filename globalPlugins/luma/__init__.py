@@ -121,6 +121,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# Live mode controller — lazily starts a tick loop on toggle.
 		from .live import LiveMode
 		self._live_mode = LiveMode(self)
+		# Single press toggles narration; double press opens the Live
+		# question dialog.
+		self._live_press = DoublePress(self._on_live_tap)
+		self._live_dialog = None
 
 		# Most recent (skill, image, prompt, response) tuple — stashed
 		# whenever a result is shown, read by the Alt+F follow-up script
@@ -143,6 +147,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._live_mode.stop()
 		except Exception:
 			log.exception("Error stopping live mode")
+		try:
+			if self._live_dialog is not None:
+				self._live_dialog.Destroy()
+		except Exception:
+			log.debug("Live dialog already gone", exc_info=True)
+		self._live_dialog = None
 		self._remove_tools_menu()
 		# Stop the local llama-server subprocess if one is running.
 		try:
@@ -1635,14 +1645,28 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				return None, None
 
 			if not provider.supports_interaction:
-				# Translators: Spoken when the configured interaction provider
-				# doesn't support computer use.
-				ui.message(
-					_(
-						"The provider \"{name}\" does not support Interaction Mode. "
-						"Please select Anthropic or Google Gemini in Settings."
-					).format(name=interaction_provider_name)
-				)
+				from .providers import OpenAICompatProvider
+
+				if type(provider) is OpenAICompatProvider:
+					# Translators: Spoken when the configured interaction provider
+					# is an OpenAI-compatible provider without Interaction Mode enabled.
+					ui.message(
+						_(
+							"Interaction Mode is not enabled for the provider \"{name}\". "
+							"Open Tools, Luma, Providers, edit this provider and check "
+							"\"Enable Interaction Mode\"."
+						).format(name=interaction_provider_name)
+					)
+				else:
+					# Translators: Spoken when the configured interaction provider
+					# doesn't support computer use.
+					ui.message(
+						_(
+							"The provider \"{name}\" does not support Interaction Mode. "
+							"Please select Anthropic, Google Gemini, or a custom provider "
+							"with Interaction Mode enabled in Settings."
+						).format(name=interaction_provider_name)
+					)
 				return None, None
 
 			if not interaction_model:
@@ -1663,6 +1687,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if provider.supports_interaction:
 				# Use a sensible default model for each provider type.
 				model = interaction_model or self._default_interaction_model(provider)
+				if not model and pdata.get("name") == settings.get("default_provider", ""):
+					# Custom (OpenAI-compatible) interaction provider that is
+					# also the default provider — reuse the default model.
+					model = settings.get("default_model", "")
 				if model:
 					return provider, model
 
@@ -1670,7 +1698,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(
 			_(
 				"No provider supporting Interaction Mode was found. "
-				"Please configure Anthropic or Google Gemini with an API key."
+				"Please configure Anthropic or Google Gemini with an API key, "
+				"or enable Interaction Mode on a custom provider and set an "
+				"interaction model in Settings."
 			)
 		)
 		return None, None
@@ -1710,10 +1740,35 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	# Translators: Description for the live mode toggle gesture.
 	@scriptHandler.script(
-		description=_("Toggle Luma Live mode (proactive continuous narration)"),
+		description=_(
+			"Toggle Luma Live mode (continuous narration); "
+			"double press: ask a question to be answered live"
+		),
 	)
 	def script_toggleLiveMode(self, gesture):
-		wx.CallAfter(self._live_mode.toggle)
+		self._live_press.tap()
+
+	def _on_live_tap(self, count):
+		if count >= 2:
+			self._open_live_question_dialog()
+		else:
+			self._live_mode.toggle()
+
+	def _open_live_question_dialog(self):
+		"""Open (or bring back) the Live question dialog."""
+		from .live import LiveQuestionDialog
+
+		dlg = self._live_dialog
+		if dlg is not None:
+			try:
+				dlg.show_again()
+				return
+			except RuntimeError:
+				self._live_dialog = None  # Was destroyed.
+		dlg = LiveQuestionDialog(nvda_gui.mainFrame, self)
+		self._live_dialog = dlg
+		dlg.Show()
+		dlg.Raise()
 
 	# ==================================================================
 	# Stop processing / interaction

@@ -6,5 +6,6 @@ details.
 """
 
 from .live import LiveMode
+from .live_dialog import LiveQuestionDialog
 
-__all__ = ["LiveMode"]
+__all__ = ["LiveMode", "LiveQuestionDialog"]

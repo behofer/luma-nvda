@@ -18,6 +18,10 @@ from ..worker import run_in_background
 
 log = logging.getLogger(__name__)
 
+# Delay between hiding the dialog and taking the first screenshot, so
+# the desktop underneath has been repainted.
+_HIDE_SETTLE_MS = 600
+
 
 class InteractionDialog(wx.Dialog):
 	"""Dialog for AI-controlled interaction mode.
@@ -131,7 +135,8 @@ class InteractionDialog(wx.Dialog):
 			ui.message(
 				_(
 					"The current provider does not support Interaction Mode. "
-					"Please use Anthropic or Gemini."
+					"Please use Anthropic, Gemini, or a custom provider with "
+					"Interaction Mode enabled."
 				)
 			)
 			return
@@ -150,9 +155,6 @@ class InteractionDialog(wx.Dialog):
 
 		screen_region = get_screen_region()
 
-		# Hide the dialog so screenshots capture the real desktop.
-		self.Hide()
-
 		from .agent_loop import InteractionLoop
 
 		loop = InteractionLoop(
@@ -166,6 +168,27 @@ class InteractionDialog(wx.Dialog):
 			cancel_event=self._cancel_event,
 		)
 
+		# Hide the dialog so screenshots capture the real desktop.  The
+		# hide only takes effect once the event loop runs, and Windows
+		# then needs a moment to repaint what was underneath — starting
+		# the loop immediately would put this dialog in the first
+		# screenshot and the AI would waste a step closing it.
+		self.Hide()
+		wx.CallLater(_HIDE_SETTLE_MS, self._start_loop_after_hide, loop)
+
+	def _start_loop_after_hide(self, loop) -> None:
+		"""Start the agent loop once the dialog is really off-screen."""
+		if not self:
+			return  # Dialog was destroyed during the delay.
+		if self._cancel_event is None or self._cancel_event.is_set():
+			# Cancelled during the short hide delay — nothing ran yet.
+			self._reset_ui()
+			return
+		if self.IsShown():
+			# Hide did not take — retry once more before giving up.
+			self.Hide()
+			wx.CallLater(_HIDE_SETTLE_MS, self._start_loop_after_hide, loop)
+			return
 		run_in_background(loop.run)
 
 	def _on_cancel(self) -> None:

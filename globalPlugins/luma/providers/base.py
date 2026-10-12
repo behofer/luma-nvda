@@ -184,8 +184,17 @@ class Provider(ABC):
 		*,
 		user_request: str,
 		screenshot_b64: str,
+		screen_size: tuple[int, int] | None = None,
+		model: str | None = None,
 	) -> dict:
 		"""Build initial state for an interaction loop.
+
+		*screen_size* is the ``(width, height)`` in pixels of the screen
+		region being controlled.  Providers that choose their screenshot
+		size dynamically (aspect-preserving) use it; providers with a
+		fixed display space may ignore it.  *model* is the model ID the
+		session will use; prompted providers may adapt their protocol
+		(e.g. coordinate convention) to it.
 
 		Returns a dict with keys:
 

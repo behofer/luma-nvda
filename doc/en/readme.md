@@ -42,6 +42,10 @@
 | `NVDA+Shift+L` | Pick a webcam or scanner, capture an image, and process with the active skill |
 | `NVDA+Shift+L` (double press) | Pick a webcam or scanner, capture an image, and open text chat |
 | `NVDA+Shift+T` | Open text chat |
+| `NVDA+Shift+I` | Open Interaction Mode (AI computer control) |
+| `NVDA+Shift+K` | Toggle Live mode (continuous change-only narration) |
+| `NVDA+Shift+K` (double press) | Ask a question that Live mode answers continuously |
+| `NVDA+Shift+F4` | Stop the current request or interaction |
 | `NVDA+Shift+Space` | Cycle to the next active skill |
 | `NVDA+Shift+1` to `0` | Execute a user-configured shortcut |
 
@@ -75,6 +79,53 @@ For self-hosted or third-party endpoints that follow the OpenAI API format:
 * Any other OpenAI-compatible endpoint
 
 Add these via Tools > Luma > Providers > "New Provider...".
+
+---
+
+## Live Mode
+
+Live mode takes a screenshot every two seconds and speaks only what changed, like a live audio describer. Press `NVDA+Shift+K` to start and again to stop. A rising beep marks the start, a falling beep the stop.
+
+### Live questions
+
+Double-press `NVDA+Shift+K` to open the *Luma Live — Ask a Question* dialog. Type or dictate what you want to know, for example *"Give me the slide title and a short description of the slide in the shared screen"*, and press Enter. The dialog hides, and Live mode now answers exactly that question: very concisely, and only when the answer changes (a new slide, a new value, a new state). While nothing changes you hear nothing.
+
+* Every answer is spoken and also written to the dialog's Answers log. Double-press `NVDA+Shift+K` again to bring the dialog back, read the log, change the question (Enter restarts with the new question) or press Stop.
+* A single press of `NVDA+Shift+K` stops Live mode at any time.
+* Closing the dialog also stops a running live question.
+* Live mode uses the built-in "Live" skill, so the provider and model come from that skill (or your defaults).
+
+---
+
+## Interaction Mode
+
+Interaction Mode lets the AI operate the computer for you: you describe a task ("Check the Privacy checkbox and press OK"), and the model looks at screenshots, clicks, types and presses keys until the task is done. Every step is announced, and `NVDA+Shift+F4` (the stop gesture) cancels at any time. This is especially useful for inaccessible applications.
+
+Open it with `NVDA+Shift+I` or from the Luma menu ("Interaction Mode").
+
+### Supported providers
+
+| Provider | How it works |
+| :--- | :--- |
+| **Anthropic** | Native Computer Use tool. |
+| **Google Gemini** | Native computer-use tool. |
+| **Custom provider with Interaction Mode enabled** | Luma drives any OpenAI-compatible vision model (vLLM, SGLang, llama.cpp server, LM Studio, OpenRouter…) through a prompted computer-use protocol. Recommended models: **Qwen3-VL** (best open GUI grounding), Qwen2.5-VL, UI-TARS. |
+
+### Using a self-hosted model (e.g. Qwen3-VL on vLLM)
+
+1. Tools > Luma > Providers > "New Provider..." (or "Edit Provider..." on an existing one).
+2. Enter the OpenAI-compatible base URL (e.g. `https://ai.example.com/v1`) and your key.
+3. Check **"Enable Interaction Mode"**.
+4. Leave **Coordinate format** on *Auto* unless you know better. Auto reads the model name: Qwen2.5-VL and UI-TARS get *Screenshot pixels*, Qwen3-VL and Gemini-style models get the *Normalized 0–1000 grid*. Unknown names use the normalized grid; override manually if clicks land off-target.
+5. In Tools > Luma > Settings choose this provider as **Interaction Provider** and set the **Interaction Model** (e.g. `Qwen/Qwen3-VL-32B-Instruct`). If you leave the Interaction Provider on auto-detect, the custom provider is used when it is also your default provider.
+
+Tips:
+
+* The server does not need tool-calling enabled; Luma embeds the tool protocol in the prompt. If the server does parse tool calls (vLLM `--enable-auto-tool-choice`), that is used automatically.
+* Screenshots are sent as JPEG at up to 1920 px on the long side with the real aspect ratio, because small controls such as taskbar icons are lost when the image is shrunk. Only the three most recent screenshots stay in the conversation, so a long task fits a 32k context window and typical request-size limits. If the server still rejects a request as too large, Luma retries once with a single screenshot. Power users can change the long side with an `"image_long_side"` key on the provider entry in `luma.json`.
+* **Refine clicks** (on by default) makes every click a two-step process: the model names its target, Luma cuts out the area around the proposed point from the full-resolution screen, enlarges it, and asks the model for the exact position of that element. This costs one small extra request per click and greatly improves accuracy on small controls. Turn it off in the provider dialog if your endpoint is slow.
+* Before each action Luma announces exactly what it is about to do, e.g. *Left click on "Chromium icon in the taskbar" at 1560, 1015* or *Typing: chromium*.
+* If clicks land consistently off by the same ratio, the model probably uses the other coordinate format — switch it in the provider dialog.
 
 ---
 

@@ -72,8 +72,11 @@ _VK_MAP: dict[str, int] = {
 	"delete": 0x2E, "del": 0x2E,
 	"home": 0x24,
 	"end": 0x23,
-	"page_up": 0x21, "pageup": 0x21,
-	"page_down": 0x22, "pagedown": 0x22,
+	"page_up": 0x21, "pageup": 0x21, "pgup": 0x21, "prior": 0x21,
+	"page_down": 0x22, "pagedown": 0x22, "pgdn": 0x22, "next": 0x22,
+	"arrowup": 0x26, "arrowdown": 0x28, "arrowleft": 0x25, "arrowright": 0x27,
+	"caps_lock": 0x14, "capslock": 0x14,
+	"print_screen": 0x2C, "printscreen": 0x2C,
 	"up": 0x26,
 	"down": 0x28,
 	"left": 0x25,
@@ -86,8 +89,136 @@ _VK_MAP: dict[str, int] = {
 	"ctrl": 0x11, "control": 0x11,
 	"shift": 0x10,
 	"alt": 0x12, "menu": 0x12,
-	"super": 0x5B, "win": 0x5B, "meta": 0x5B,
+	"super": 0x5B, "win": 0x5B, "meta": 0x5B, "cmd": 0x5B, "command": 0x5B,
+	"windows": 0x5B,
 }
+
+
+# ---------------------------------------------------------------------------
+# Spoken descriptions
+# ---------------------------------------------------------------------------
+
+def describe_action(
+	action: dict,
+	screen_region: tuple[int, int, int, int],
+	*,
+	coordinate_size: tuple[int, int] = (DEFAULT_DISPLAY_WIDTH, DEFAULT_DISPLAY_HEIGHT),
+) -> str:
+	"""Return a precise, translated sentence saying what *action* will do.
+
+	Spoken to the user *before* the action runs, e.g.
+	``Left click on "Chromium icon in the taskbar" at 1560, 1015`` or
+	``Typing: chromium``.  Unlike :func:`execute_action`'s return value
+	this is meant for a screen-reader user, not for logs.
+	"""
+	name = action.get("action", "")
+	target = action.get("target") or ""
+	coord = action.get("coordinate")
+	where = ""
+	pos: tuple[int, int] | None = None
+	if coord is not None:
+		try:
+			x, y = scale_to_screen(
+				int(coord[0]), int(coord[1]), screen_region,
+				coordinate_size=coordinate_size,
+			)
+			pos = (x, y)
+			if target:
+				# Translators: Where a mouse action happens. {target} is the UI
+				# element named by the AI, {x}/{y} are screen pixels.
+				where = _(" on \"{target}\" at {x}, {y}").format(target=target, x=x, y=y)
+			else:
+				# Translators: Where a mouse action happens, as screen pixels.
+				where = _(" at {x}, {y}").format(x=x, y=y)
+		except (TypeError, ValueError, IndexError):
+			pass
+
+	if name == "left_click":
+		# Translators: Spoken before a left click. {where} is the location phrase.
+		return _("Left click{where}").format(where=where)
+	if name == "right_click":
+		# Translators: Spoken before a right click.
+		return _("Right click{where}").format(where=where)
+	if name == "middle_click":
+		# Translators: Spoken before a middle click.
+		return _("Middle click{where}").format(where=where)
+	if name == "double_click":
+		# Translators: Spoken before a double click.
+		return _("Double click{where}").format(where=where)
+	if name == "triple_click":
+		# Translators: Spoken before a triple click.
+		return _("Triple click{where}").format(where=where)
+	if name == "mouse_move":
+		if pos is not None and target:
+			# Translators: Spoken before moving the mouse to a named element.
+			return _("Moving the mouse to \"{target}\" at {x}, {y}").format(
+				target=target, x=pos[0], y=pos[1],
+			)
+		if pos is not None:
+			# Translators: Spoken before moving the mouse to a position.
+			return _("Moving the mouse to {x}, {y}").format(x=pos[0], y=pos[1])
+		# Translators: Spoken before moving the mouse (position unknown).
+		return _("Moving the mouse")
+	if name == "type":
+		# Translators: Spoken before typing text. {text} is the full text.
+		return _("Typing: {text}").format(text=action.get("text", ""))
+	if name == "type_at":
+		# Translators: Spoken before clicking a field and typing into it.
+		msg = _("Clicking{where} and typing: {text}").format(
+			where=where, text=action.get("text", ""),
+		)
+		if action.get("press_enter"):
+			# Translators: Appended when Enter is pressed after typing.
+			msg += _(", then pressing Enter")
+		return msg
+	if name == "key":
+		# Translators: Spoken before pressing a key or key combination.
+		return _("Pressing {keys}").format(keys=action.get("text", ""))
+	if name == "scroll":
+		direction = action.get("scroll_direction", "down")
+		amount = action.get("scroll_amount", 3)
+		# Translators: Spoken before scrolling. {direction} is up/down/left/right.
+		return _("Scrolling {direction} {amount} step(s){where}").format(
+			direction=_direction_label(direction), amount=amount, where=where,
+		)
+	if name == "scroll_page":
+		# Translators: Spoken before scrolling the page.
+		return _("Scrolling the page {direction}").format(
+			direction=_direction_label(action.get("scroll_direction", "down")),
+		)
+	if name == "left_click_drag":
+		end = action.get("target_coordinate") or action.get("coordinate")
+		try:
+			ex, ey = scale_to_screen(
+				int(end[0]), int(end[1]), screen_region, coordinate_size=coordinate_size,
+			)
+			# Translators: Spoken before a drag. {x}/{y} is the drop position.
+			return _("Dragging to {x}, {y}").format(x=ex, y=ey)
+		except (TypeError, ValueError, IndexError):
+			# Translators: Spoken before a drag when the position is unknown.
+			return _("Dragging")
+	if name == "wait":
+		# Translators: Spoken before waiting. {seconds} is the duration.
+		return _("Waiting {seconds} second(s)").format(seconds=action.get("duration", 1))
+	if name == "screenshot":
+		# Translators: Spoken when the AI only wants a fresh screenshot.
+		return _("Taking a new screenshot")
+	# Translators: Spoken for an action without a specific description.
+	return _("Performing action: {name}").format(name=name)
+
+
+def _direction_label(direction: str) -> str:
+	labels = {
+		# Translators: Scroll direction.
+		"up": _("up"),
+		# Translators: Scroll direction.
+		"down": _("down"),
+		# Translators: Scroll direction.
+		"left": _("left"),
+		# Translators: Scroll direction.
+		"right": _("right"),
+	}
+	return labels.get(direction, direction)
 
 
 # ---------------------------------------------------------------------------
@@ -340,16 +471,31 @@ def _do_left_click_drag(
 	screen_region: tuple[int, int, int, int],
 	coordinate_size: tuple[int, int],
 ) -> str:
-	start = action["coordinate"]
-	end = action["target_coordinate"]
-	sx, sy = scale_to_screen(
-		int(start[0]), int(start[1]), screen_region,
-		coordinate_size=coordinate_size,
-	)
+	# Accept Anthropic's (start_coordinate → coordinate), Gemini's
+	# (coordinate → target_coordinate) and Qwen's (coordinate = drop
+	# target, start = current cursor) conventions.
+	if "start_coordinate" in action:
+		start = action["start_coordinate"]
+		end = action["coordinate"]
+	elif "target_coordinate" in action:
+		start = action.get("coordinate")
+		end = action["target_coordinate"]
+	else:
+		start = None
+		end = action["coordinate"]
 	ex, ey = scale_to_screen(
 		int(end[0]), int(end[1]), screen_region,
 		coordinate_size=coordinate_size,
 	)
+	if start is not None:
+		sx, sy = scale_to_screen(
+			int(start[0]), int(start[1]), screen_region,
+			coordinate_size=coordinate_size,
+		)
+	else:
+		pt = ctypes.wintypes.POINT()
+		_user32.GetCursorPos(ctypes.byref(pt))
+		sx, sy = pt.x, pt.y
 
 	_user32.SetCursorPos(sx, sy)
 	time.sleep(0.02)

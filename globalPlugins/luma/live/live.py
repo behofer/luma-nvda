@@ -91,6 +91,14 @@ class LiveMode:
 		self._plugin = plugin
 		self._running: bool = False
 		self._timer: wx.CallLater | None = None
+		# Focus question for "live question" mode (``None`` = plain
+		# narration).  ``last_question`` survives stop() so the dialog can
+		# pre-fill it next time.
+		self._question: str | None = None
+		self.last_question: str = ""
+		# Optional main-thread callback ``(text) -> None`` receiving every
+		# spoken answer (used by the Live question dialog's log).
+		self._on_answer = None
 		# Rolling history of assistant responses. Deque with maxlen
 		# auto-evicts the oldest entry once we exceed ``HISTORY_TURNS``.
 		self._history: Deque[str] = collections.deque(maxlen=HISTORY_TURNS)
@@ -109,8 +117,21 @@ class LiveMode:
 	def is_running(self) -> bool:
 		return self._running
 
-	def start(self) -> None:
-		"""Begin live narration. No-op if already running."""
+	@property
+	def question(self) -> str | None:
+		"""The focus question of the running session, or ``None``."""
+		return self._question if self._running else None
+
+	def start(self, question: str | None = None, on_answer=None) -> None:
+		"""Begin live narration. No-op if already running.
+
+		*question*, when given, switches the session into **live question
+		mode**: every frame is analysed only to answer that question, as
+		tersely as possible, and only when the answer changed.  Example:
+		"Give me the slide title and a short description of the slide in
+		the shared screen."  *on_answer* is called on the main thread with
+		each spoken answer.
+		"""
 		if self._running:
 			return
 		# Resolve provider + skill before the first beep so any config
@@ -132,11 +153,21 @@ class LiveMode:
 		self._history.clear()
 		self._cancel = threading.Event()
 		self._in_flight = False
+		question = (question or "").strip()
+		self._question = question or None
+		self._on_answer = on_answer
+		if question:
+			self.last_question = question
 		self._running = True
 
 		_play_beep(_START_BEEP)
-		# Translators: Spoken when Live mode starts.
-		ui.message(_("Live mode on."))
+		if question:
+			# Translators: Spoken when Live question mode starts. {question}
+			# is what the AI will keep answering.
+			ui.message(_("Live mode on, answering: {question}").format(question=question))
+		else:
+			# Translators: Spoken when Live mode starts.
+			ui.message(_("Live mode on."))
 		# Fire the first tick immediately — users expect prompt
 		# feedback after pressing the toggle, not a 2-second wait.
 		wx.CallLater(0, self._tick)
@@ -154,6 +185,8 @@ class LiveMode:
 			except Exception:
 				log.debug("Live timer stop failed", exc_info=True)
 			self._timer = None
+		self._question = None
+		self._on_answer = None
 		_play_beep(_STOP_BEEP)
 		# Translators: Spoken when Live mode stops.
 		ui.message(_("Live mode off."))
@@ -164,6 +197,25 @@ class LiveMode:
 			self.stop()
 		else:
 			self.start()
+
+	def refocus(self, question: str, on_answer=None) -> None:
+		"""Switch a running session to a new *question* (or start one).
+
+		History is cleared so the first answer to the new question is
+		spoken immediately rather than suppressed as "unchanged".
+		"""
+		if self._running:
+			self._running = False
+			if self._cancel is not None:
+				self._cancel.set()
+			if self._timer is not None:
+				try:
+					self._timer.Stop()
+				except Exception:
+					pass
+				self._timer = None
+			self._in_flight = False
+		self.start(question=question, on_answer=on_answer)
 
 	# ------------------------------------------------------------------
 	# Tick loop
@@ -272,6 +324,11 @@ class LiveMode:
 		messages: list[dict] = [
 			{"role": "system", "content": self._skill.render_prompt(Language=language)},
 		]
+		if self._question:
+			messages.append({
+				"role": "system",
+				"content": build_focus_instructions(self._question),
+			})
 		if self._history:
 			lines = [
 				# Translators: Header for the rolling context of prior
@@ -281,11 +338,22 @@ class LiveMode:
 			for idx, entry in enumerate(self._history, start=1):
 				lines.append(f"{idx}. {entry}")
 			messages.append({"role": "system", "content": "\n".join(lines)})
-		messages.append({
-			"role": "user",
-			# Translators: Per-frame instruction sent to the AI in Live mode.
-			"content": _("Narrate the current frame following the Live guidelines."),
-		})
+		if self._question:
+			messages.append({
+				"role": "user",
+				# Translators: Per-frame instruction sent to the AI in Live
+				# question mode. {question} is the user's question.
+				"content": _(
+					"Answer this question for the current frame, or reply with a "
+					"single dot if the answer has not changed: {question}"
+				).format(question=self._question),
+			})
+		else:
+			messages.append({
+				"role": "user",
+				# Translators: Per-frame instruction sent to the AI in Live mode.
+				"content": _("Narrate the current frame following the Live guidelines."),
+			})
 		return messages
 
 	def _handle_response(self, text: str) -> None:
@@ -299,6 +367,11 @@ class LiveMode:
 		if cleaned == _NO_CHANGE_SENTINEL:
 			return
 		ui.message(cleaned)
+		if self._on_answer is not None:
+			try:
+				self._on_answer(cleaned)
+			except Exception:
+				log.debug("Live on_answer callback failed", exc_info=True)
 
 	# ------------------------------------------------------------------
 	# Helpers
@@ -313,6 +386,30 @@ class LiveMode:
 			if sk.name.lower() == "live":
 				return sk
 		return None
+
+
+def build_focus_instructions(question: str) -> str:
+	"""System-prompt block that turns Live narration into live Q&A.
+
+	Kept in English on purpose — it is addressed to the model, which is
+	separately told which language to answer in.
+	"""
+	return (
+		"LIVE QUESTION MODE. The user asked one specific question and wants it "
+		"answered continuously as the screen changes:\n"
+		f"\"{question}\"\n"
+		"Rules (these override the general narration rules where they conflict):\n"
+		"- Answer only this question for the current frame. Ignore everything "
+		"else on screen: other windows, UI chrome, notifications, cursors.\n"
+		"- Be extremely concise: one short line, at most two, unless the question "
+		"itself asks for more. No preamble, no repetition of the question.\n"
+		"- Change-only: if your answer would be the same as your previous "
+		"response, reply with a single dot `.` and nothing else.\n"
+		"- If what the question asks about is not visible yet, reply `.` — do not "
+		"explain that it is missing. If it was visible before and has now "
+		"disappeared, say so once in a few words.\n"
+		"- Never ask questions back and never comment on these rules."
+	)
 
 
 def _play_beep(spec: tuple[int, int]) -> None:

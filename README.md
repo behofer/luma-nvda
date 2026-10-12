@@ -38,6 +38,13 @@ you tailor Luma to your workflow.
   PDFs, PowerPoint slides).
 * **Text Chat:** Have a back-and-forth conversation with an AI, optionally
   including a screenshot as context.
+* **Live Mode:** Continuous change-only narration of the screen, or ask a
+  question ("What is the slide title?") that is answered live whenever the
+  answer changes.
+* **Interaction Mode:** Let the AI operate inaccessible UI for you — it takes
+  screenshots, clicks, types and presses keys until the task is done. Works
+  natively with Anthropic and Gemini, and with any OpenAI-compatible vision
+  model (e.g. Qwen3-VL on vLLM) via a prompted computer-use protocol.
 * **Customizable Skills:** Define reusable prompt templates as Markdown files
   with YAML frontmatter. Each skill can specify its own provider, model, and
   temperature.

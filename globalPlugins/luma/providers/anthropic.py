@@ -134,7 +134,7 @@ class AnthropicProvider(Provider):
 		return True
 
 	def prepare_interaction(
-		self, *, user_request: str, screenshot_b64: str,
+		self, *, user_request: str, screenshot_b64: str, screen_size=None, model=None,
 	) -> dict:
 		tools = [
 			{

@@ -25,7 +25,13 @@ import wx
 log = logging.getLogger(__name__)
 
 from . import actions
-from .scaling import resize_screenshot
+from .scaling import crop_and_zoom, resize_screenshot, scale_to_screen
+
+# Actions that carry a `coordinate` the provider may want to refine.
+_REFINABLE_ACTIONS = frozenset({
+	"left_click", "right_click", "middle_click", "double_click",
+	"triple_click", "mouse_move", "type_at",
+})
 
 
 class InteractionLoop:
@@ -95,24 +101,44 @@ class InteractionLoop:
 
 		# Discover the provider's display and coordinate sizes
 		# (lightweight — no API call, just builds config).
+		screen_size = (self._screen_region[2], self._screen_region[3])
 		config = self._provider.prepare_interaction(
-			user_request="", screenshot_b64="",
+			user_request="", screenshot_b64="", screen_size=screen_size,
+			model=self._model,
 		)
 		display_size = config["display_size"]
 		coordinate_size = config["coordinate_size"]
+		# Optional provider hints (prompted providers use these).
+		refine_clicks = bool(config.get("refine_clicks")) and hasattr(
+			self._provider, "refine_coordinate",
+		)
+		settle_delay = float(config.get("settle_delay", 0.3))
+		# Encoding of screenshots sent to the model.  Native providers get
+		# PNG (their request formats say so); prompted providers may ask
+		# for JPEG to keep request bodies small.
+		image_format = config.get("image_format", "png")
+		image_quality = int(config.get("image_quality", 85))
+
+		def _for_model(b64_png: str) -> str:
+			return resize_screenshot(
+				b64_png, display_size=display_size,
+				fmt=image_format, quality=image_quality,
+			)
 
 		# Capture and resize initial screenshot.
 		wx.CallAfter(self._on_step, _("Taking screenshot..."))
-		screenshot = capture_screen()
-		if screenshot is None:
+		full_screenshot = capture_screen()
+		if full_screenshot is None:
 			wx.CallAfter(self._on_error, _("Failed to capture screen."))
 			return
-		screenshot = resize_screenshot(screenshot, display_size=display_size)
+		screenshot = _for_model(full_screenshot)
 
 		# Build the real initial state with the resized screenshot.
 		setup = self._provider.prepare_interaction(
 			user_request=self._user_request,
 			screenshot_b64=screenshot,
+			screen_size=screen_size,
+			model=self._model,
 		)
 		messages = setup["messages"]
 		tools = setup["tools"]
@@ -156,34 +182,61 @@ class InteractionLoop:
 				action = tc["action"]
 				action_name = action.get("action", "")
 
+				if (
+					refine_clicks
+					and action_name in _REFINABLE_ACTIONS
+					and action.get("coordinate") is not None
+				):
+					action = self._refine_action(
+						action, full_screenshot,
+						coordinate_size=coordinate_size,
+						image_format=image_format,
+					)
+
+				# Tell the user exactly what is about to happen (element,
+				# position, text, keys) before doing it.
+				spoken = actions.describe_action(
+					action, self._screen_region,
+					coordinate_size=coordinate_size,
+				)
+				# Translators: Spoken right before an action is executed.
+				wx.CallAfter(
+					self._on_step,
+					_("Step {step}: {desc}").format(step=step, desc=spoken),
+				)
+
 				description = actions.execute_action(
 					action, self._screen_region,
 					coordinate_size=coordinate_size,
 				)
-				# Translators: Spoken when an action is executed.
-				wx.CallAfter(
-					self._on_step,
-					_("Step {step}: {desc}").format(
-						step=step, desc=description,
-					),
-				)
+				if description.startswith(("Failed", "Unknown")):
+					# Translators: Spoken when an action could not be executed.
+					wx.CallAfter(
+						self._on_step,
+						_("Action failed: {desc}").format(desc=description),
+					)
 
-				# Brief pause after action for the UI to settle.
+				# Pause after the action so the UI can settle before the
+				# next screenshot — otherwise the model acts on stale state.
 				if action_name not in ("screenshot", "wait"):
-					time.sleep(0.3)
+					time.sleep(settle_delay)
 
 				# Capture fresh screenshot for the tool result.
 				new_screenshot = capture_screen()
 				if new_screenshot is None:
 					log.warning("Screenshot capture failed after action.")
 					continue
+				full_screenshot = new_screenshot
 
 				tool_results.append({
 					"id": tc["id"],
 					"name": tc.get("name", ""),
-					"screenshot_b64": resize_screenshot(
-						new_screenshot, display_size=display_size,
-					),
+					# Human-readable result of the action and the action
+					# itself; prompted providers echo them back to the
+					# model, native ones ignore them.
+					"description": description,
+					"action": action,
+					"screenshot_b64": _for_model(new_screenshot),
 				})
 
 			# Append the turn to the message history.
@@ -201,3 +254,62 @@ class InteractionLoop:
 				max=self._max_steps,
 			),
 		)
+
+	# -- Click refinement (two-stage grounding) -----------------------------
+
+	def _refine_action(
+		self,
+		action: dict,
+		full_screenshot_b64: str,
+		*,
+		coordinate_size: tuple[int, int],
+		image_format: str = "png",
+	) -> dict:
+		"""Ask the provider for a more precise coordinate using a zoomed crop.
+
+		The region around the proposed click point is cut from the
+		*full-resolution* screenshot, enlarged, and handed to
+		``provider.refine_coordinate``.  On any failure the original
+		action is returned unchanged.
+		"""
+		try:
+			left, top, width, height = self._screen_region
+			cx, cy = scale_to_screen(
+				int(action["coordinate"][0]), int(action["coordinate"][1]),
+				self._screen_region, coordinate_size=coordinate_size,
+			)
+			spec = self._provider.refine_crop_spec((width, height))
+			crop_w, crop_h, zoom = spec["crop_size"][0], spec["crop_size"][1], spec["zoom"]
+			crop_left = min(max(cx - left - crop_w // 2, 0), max(0, width - crop_w))
+			crop_top = min(max(cy - top - crop_h // 2, 0), max(0, height - crop_h))
+			crop_b64 = crop_and_zoom(
+				full_screenshot_b64, (crop_left, crop_top, crop_w, crop_h),
+				zoom=zoom, fmt=image_format, quality=90,
+			)
+			if crop_b64 is None:
+				return action
+
+			point = self._provider.refine_coordinate(
+				model=self._model,
+				crop_b64=crop_b64,
+				crop_size=(crop_w * zoom, crop_h * zoom),
+				action=action,
+			)
+			if point is None:
+				return action
+			px, py = point
+			# Zoomed-crop pixels → screen pixels → provider coordinate space.
+			sx = left + crop_left + px / zoom
+			sy = top + crop_top + py / zoom
+			api_x = int(round((sx - left) / width * coordinate_size[0]))
+			api_y = int(round((sy - top) / height * coordinate_size[1]))
+			log.info(
+				"Refined %s: (%s) -> (%s, %s) [screen %d,%d]",
+				action.get("action"), action["coordinate"], api_x, api_y, int(sx), int(sy),
+			)
+			refined = dict(action)
+			refined["coordinate"] = [api_x, api_y]
+			return refined
+		except Exception:
+			log.exception("Click refinement failed — using original coordinate")
+			return action
